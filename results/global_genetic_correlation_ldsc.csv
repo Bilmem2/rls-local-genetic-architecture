@@ -1,0 +1,32 @@
+anchor,trait,rg,se,z,p,gcov_intercept
+RLS,Parkinson's disease,0.0055,0.0400,0.1363,8.9157e-01,-0.0017
+RLS,anxiety,0.2848,0.0295,9.6702,4.0354e-22,0.0384
+RLS,MDD,0.3284,0.0319,10.2881,7.9741e-25,0.0617
+RLS,bipolar disorder,-0.0253,0.0301,-0.8395,4.0118e-01,-0.0037
+RLS,PTSD,0.3076,0.0318,9.6790,3.7031e-22,0.0476
+RLS,schizophrenia,-0.0613,0.0273,-2.2476,2.4600e-02,-0.0195
+RLS,REM sleep behaviour disorder,0.1485,0.1280,1.1599,2.4611e-01,0.0261
+RLS,chronotype,-0.0459,0.0302,-1.5203,1.2844e-01,-0.0075
+RLS,obstructive sleep apnoea,0.2469,0.0281,8.7803,1.6300e-18,0.0614
+RLS,short sleep duration,0.3531,0.0332,10.6361,2.0238e-26,0.0363
+RLS,long sleep duration,0.2322,0.0551,4.2171,2.4747e-05,0.0158
+RLS,narcolepsy,0.0404,0.1152,0.3505,7.2599e-01,0.0207
+RLS,insomnia,0.4834,0.0343,14.0923,4.2353e-45,0.0457
+RLS,daytime sleepiness,0.1502,0.0324,4.6327,3.6087e-06,0.0046
+RLS,essential tremor,0.1863,0.0415,4.4868,7.2317e-06,0.0351
+RLS,Tourette syndrome,0.2543,0.0597,4.2598,2.0458e-05,0.0097
+Parkinson's disease,anxiety,-0.0008,0.0338,-0.0243,0.9806,0.0101
+Parkinson's disease,MDD,-0.0275,0.0323,-0.8489,0.3959,0.0032
+Parkinson's disease,bipolar disorder,0.0484,0.0378,1.2805,0.2004,-0.0026
+Parkinson's disease,PTSD,-0.0252,0.0361,-0.6977,0.4854,0.0039
+Parkinson's disease,schizophrenia,-0.0069,0.0287,-0.2396,0.8107,0.0054
+Parkinson's disease,REM sleep behaviour disorder,0.2404,0.1877,1.2808,0.2003,0.0293
+Parkinson's disease,chronotype,-0.0335,0.0303,-1.1044,0.2694,0.0102
+Parkinson's disease,obstructive sleep apnoea,-0.0259,0.0337,-0.7680,0.4425,0.0067
+Parkinson's disease,short sleep duration,-0.0540,0.0423,-1.2780,0.2012,-0.0059
+Parkinson's disease,long sleep duration,0.0194,0.0825,0.2356,0.8137,-0.0082
+Parkinson's disease,narcolepsy,0.0123,0.1381,0.0890,0.9291,0.0005
+Parkinson's disease,insomnia,0.0251,0.0424,0.592,0.5538,-0.0072
+Parkinson's disease,daytime sleepiness,-0.0256,0.0394,-0.6493,0.5161,-0.0019
+Parkinson's disease,essential tremor,0.3228,0.0540,5.9760,2.2868e-09,0.0041
+Parkinson's disease,Tourette syndrome,-0.0535,0.0834,-0.6418,5.2102e-01,0.0044

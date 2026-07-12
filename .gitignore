@@ -1,0 +1,19 @@
+# Never commit data or large intermediates
+data/
+*.sumstats
+*.sumstats.gz
+*.gz
+*.tsv
+*.tsv.gz
+*.vcf
+*.vcf.gz
+*.bed
+*.bim
+*.fam
+# language cruft
+.Rhistory
+.RData
+__pycache__/
+*.pyc
+.DS_Store
+*.Zone.Identifier

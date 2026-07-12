@@ -1,0 +1,12 @@
+pd_gwas,rls_gwas,ancestry,local_rg_rho,ci_low,ci_high,estimate_type
+Loesch 2021,RLS-AMR (Akcimen),AMR,-0.333,,,point estimate (triage)
+Rizig 2023,RLS-AFR (Akcimen),AFR,-0.734,-1.0,-0.419,95% CI (gated LAVA)
+FinnGen R11,Schormair 2024,EUR,-0.025,,,point estimate (triage)
+FinnGen R11,Didriksen 2020,EUR,-0.329,,,point estimate (triage)
+FinnGen R11,Akcimen 2026,EUR,-0.098,,,point estimate (triage)
+GP2 2024,Schormair 2024,EUR,-0.306,-0.496,-0.122,95% CI (gated LAVA)
+GP2 2024,Didriksen 2020,EUR,-0.556,-0.733,-0.378,95% CI (gated LAVA)
+GP2 2024,Akcimen 2026,EUR,-0.49,-0.649,-0.333,95% CI (gated LAVA)
+Nalls 2019,Schormair 2024,EUR,-0.452,-0.762,-0.184,95% CI (gated LAVA)
+Nalls 2019,Didriksen 2020,EUR,-0.662,-0.998,-0.41,95% CI (gated LAVA)
+Nalls 2019,Akcimen 2026,EUR,-0.53,-0.826,-0.292,95% CI (gated LAVA)
