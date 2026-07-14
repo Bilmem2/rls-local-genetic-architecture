@@ -37,7 +37,7 @@ step bash    scripts/2_munge/annotate_sleep.sh            # annotate rsIDs (OSA,
 step bash    scripts/2_munge/munge_sleep2.sh              # OSA + sleep duration
 step bash    scripts/2_munge/munge_sleep3.sh              # sleep-duration rsID fix
 step bash    scripts/2_munge/munge_rg_daytime.sh          # daytime sleepiness
-step bash    scripts/2_munge/narcolepsy_fix3.sh           # narcolepsy
+step bash    scripts/2_munge/munge_narcolepsy_ollila.sh   # narcolepsy (Ollila 2023 EUR)
 
 # ---- Stage 3: global genetic correlation (LDSC) ----
 step bash    scripts/3_global_rg/panel_rg.sh
@@ -56,11 +56,12 @@ step bash    scripts/5_coloc/coloc_meis1.sh
 step bash    scripts/5_coloc/coloc_chr1.sh
 
 # ---- Stage 6: TOX3/CASC16 cross-ancestry ----
-step bash    scripts/6_cross_ancestry_tox3/betabeta_extract.sh
-step python  scripts/6_cross_ancestry_tox3/betabeta_plot.py
-step python  scripts/6_cross_ancestry_tox3/forest_tox3.py
+step Rscript scripts/6_cross_ancestry_tox3/run_xanc_coloc_afr.R  # AFR local rg at every coloc locus
+step bash    scripts/6_cross_ancestry_tox3/betabeta_extract.sh   # also renders betabeta_plot.py
+step python  scripts/6_cross_ancestry_tox3/forest_tox3.py       # Figure 5
 
 # ---- Stage 7: figures ----
-step Rscript scripts/7_figures/forest_rg.R
+step Rscript scripts/7_figures/forest_rg.R                      # Figure 2
+step python  scripts/7_figures/coloc_selectivity.py             # Figure 3
 
 echo; echo "=== pipeline complete ==="

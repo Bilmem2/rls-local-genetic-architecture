@@ -1,20 +1,55 @@
 #!/usr/bin/env Rscript
-# Forest plot: RLS (rls_akcimen) vs PD (Nalls) global genetic correlation x panel
+# Figure 2 - forest plot: RLS (Akcimen) vs PD (Nalls) global genetic correlation across the panel.
+#
+# Every plotted number is read from results/global_genetic_correlation_ldsc.csv (the LDSC output
+# table shipped with this repository), so the figure cannot drift away from the reported results.
+# This script fixes only the display order and the axis labels; if a trait is missing from the
+# table it stops rather than silently plotting an incomplete panel.
 ROOT <- "/path/to/analysis"
-dir.create(file.path(ROOT,"results/figures"), showWarnings=FALSE, recursive=TRUE)
-tr    <- c("Insomnia","Short sleep dur.","Depression (MDD)","PTSD","Anxiety","OSA",
-           "Long sleep dur.","Daytime sleepiness","RBD","Chronotype","Schizophrenia","Bipolar","Narcolepsy")
-rls   <- c(0.48,0.35,0.33,0.31,0.28,0.25,0.23,0.15,0.15,-0.05,-0.06,-0.03,0.04)
-rls.se<- c(0.034,0.033,0.032,0.032,0.030,0.028,0.055,0.032,0.128,0.030,0.027,0.030,0.115)
-rls.p <- c(4e-45,2e-26,8e-25,4e-22,4e-22,2e-18,2e-5,4e-6,0.25,0.13,0.025,0.40,0.73)
-pd    <- c(0.025,-0.054,-0.028,-0.025,-0.001,-0.026,0.019,-0.026,0.24,-0.034,-0.007,0.048,0.012)
-pd.se <- c(0.042,0.042,0.032,0.036,0.034,0.034,0.083,0.039,0.188,0.030,0.029,0.038,0.138)
+RG   <- file.path(ROOT, "results/global_genetic_correlation_ldsc.csv")
+OUT  <- file.path(ROOT, "results/figures/forest_rg_panel.png")
+dir.create(dirname(OUT), showWarnings=FALSE, recursive=TRUE)
+
+d <- read.csv(RG, stringsAsFactors=FALSE, check.names=FALSE)
+
+# display order (top to bottom) -> axis label; the values come from the table, not from this list
+map <- rbind(
+  c("insomnia",                     "Insomnia"),
+  c("short sleep duration",         "Short sleep dur."),
+  c("MDD",                          "Depression (MDD)"),
+  c("PTSD",                         "PTSD"),
+  c("anxiety",                      "Anxiety"),
+  c("obstructive sleep apnoea",     "OSA"),
+  c("long sleep duration",          "Long sleep dur."),
+  c("daytime sleepiness",           "Daytime sleepiness"),
+  c("REM sleep behaviour disorder", "RBD"),
+  c("chronotype",                   "Chronotype"),
+  c("schizophrenia",                "Schizophrenia"),
+  c("bipolar disorder",             "Bipolar"),
+  c("narcolepsy",                   "Narcolepsy"))
+
+# The manuscript rounds half away from zero (e.g. rg 0.0055 -> 0.006 in Table 2); mirror that here
+# so the annotation matches the text. The 1e-9 nudge absorbs binary representation error, which
+# otherwise stores 0.0055 as 0.005499999... and rounds it down.
+round_half_up <- function(x, d){ sign(x) * floor(abs(x) * 10^d + 0.5 + 1e-9) / 10^d }
+
+pick <- function(anchor, trait, col){
+  v <- d[d$anchor == anchor & d$trait == trait, col]
+  if (length(v) != 1) stop(sprintf("expected exactly one '%s' x '%s' row in %s", anchor, trait, RG))
+  as.numeric(v) }
+grab <- function(anchor, col) vapply(map[,1], function(t) pick(anchor, t, col), numeric(1))
+
+tr     <- map[,2]
+rls    <- grab("RLS", "rg");                 rls.se <- grab("RLS", "se"); rls.p <- grab("RLS", "p")
+pd     <- grab("Parkinson's disease", "rg"); pd.se  <- grab("Parkinson's disease", "se")
+rls_pd <- pick("RLS", "Parkinson's disease", "rg")   # the null anchor-anchor correlation
+
 n <- length(tr); y <- n:1; off <- 0.19
 col.rls <- "#1f6feb"; col.pd <- "#c0873a"
 sig <- rls.p < 0.05/n
-png(file.path(ROOT,"results/figures/forest_rg_panel.png"), width=2700, height=2050, res=300, type="cairo")
+png(OUT, width=2700, height=2050, res=300, type="cairo")
 par(mar=c(5,9.5,3.2,1.5))
-plot(NA, xlim=c(-0.15,0.63), ylim=c(0.5,n+0.5), yaxt="n", xlab="Genetic correlation rg (95% CI)", ylab="",
+plot(NA, xlim=c(-0.42,0.63), ylim=c(0.5,n+0.5), yaxt="n", xlab="Genetic correlation rg (95% CI)", ylab="",
      main="Global genetic correlation (LDSC): RLS vs PD × sleep / psychiatric panel", cex.main=1.02)
 abline(v=0, lty=2, col="gray55")
 axis(2, at=y, labels=tr, las=1, cex.axis=0.92)
@@ -26,7 +61,8 @@ segments(pd-1.96*pd.se, y-off, pd+1.96*pd.se, y-off, col=col.pd, lwd=2.2)
 points(pd, y-off, pch=21, col=col.pd, bg="white", cex=1.05)
 legend("bottomright", legend=c("RLS (rls_akcimen)","PD (Nalls 2019)"), col=c(col.rls,col.pd),
        pch=c(19,21), lwd=2.2, bty="n", cex=0.92, pt.bg="white")
-mtext("Filled = Bonferroni-significant (RLS, p<0.05/13).  RLS×PD global rg = 0.006 (null) — their link is local (LAVA/TOX3), not global.",
+mtext(sprintf("Filled = Bonferroni-significant (RLS, p<0.05/%d).  RLS×PD global rg = %.3f (null) — their link is local (LAVA/TOX3), not global.",
+              n, round_half_up(rls_pd, 3)),
       side=1, line=3.6, cex=0.68, col="gray35")
 dev.off()
-cat("wrote results/figures/forest_rg_panel.png\n")
+cat("wrote", OUT, "\n")

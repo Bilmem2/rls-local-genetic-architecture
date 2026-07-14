@@ -19,7 +19,7 @@ mk_ovl(){ printf '%s %s\n%s 1 0\n%s 0 1\n' "$2" "$3" "$2" "$3" > "$1"; }
 runscan(){ # 1 tag  2 ref-basename  3 LAVA_PAIRS  4 out.csv
   export LAVA_REF="$ROOT/data/reference/$2"; export LAVA_LOCF="$LOC"; export LAVA_OUT="$4"; export LAVA_PAIRS="$3"
   echo "### $1  (ref=$2)  -> $4 ###"; cd "$ROOT"
-  stdbuf -oL -eL "$RS" scripts/pd_05_lava.R 2>&1 | tee "$ROOT/results/_logs/lava_$1.log" | grep --line-buffered -vE "$FILT"
+  stdbuf -oL -eL "$RS" scripts/4_local_rg_lava/pd_05_lava.R 2>&1 | tee "$ROOT/results/_logs/lava_$1.log" | grep --line-buffered -vE "$FILT"
 }
 echo "### CROSS-ANCESTRY + GP2 LAVA  $(date -u +%FT%TZ) ###"
 

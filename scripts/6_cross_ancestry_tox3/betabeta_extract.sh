@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Extract TOX3/CASC16 region SNPs from raw PD + RLS sumstats, then plot beta/beta.
 set -uo pipefail
-source ~/miniconda3/etc/profile.d/conda.sh; conda activate ldsc
-GW=~/adhd-rls-sex-stratified/data/gwas
-W=~/adhd-rls-sex-stratified/results/betabeta; mkdir -p "$W"; cd "$W"
+source "$(conda info --base 2>/dev/null || echo "$HOME/miniconda3")/etc/profile.d/conda.sh"; conda activate ldsc
+ROOT=/path/to/analysis
+GW=$ROOT/data/gwas
+W=$ROOT/results/betabeta; mkdir -p "$W"; cd "$W"
 
 echo "[extract] PD Nalls chr16:52.04-53.39Mb (GRCh37); RLS chr16 (rsID-merged downstream)"
 # PD Nalls: chromosome=1 base_pair_location=2 effect_allele=3 other_allele=4 beta=5 ... p_value=8 rsid=9
@@ -19,4 +20,4 @@ zcat "$GW/rls/didriksen2020_RLS_meta.txt.gz" \
 
 wc -l pd_nalls_tox3.txt rls_*_chr16.txt
 echo "[plot]"
-python ~/adhd-rls-sex-stratified/scripts/betabeta_plot.py
+python "$ROOT/scripts/6_cross_ancestry_tox3/betabeta_plot.py"

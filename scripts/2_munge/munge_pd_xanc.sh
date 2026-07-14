@@ -5,7 +5,7 @@ source "$(conda info --base 2>/dev/null || echo "$HOME/miniconda3")/etc/profile.
 ROOT=/path/to/analysis; LDSC=$ROOT/tools/ldsc; HM3=$ROOT/data/ldsc_ref/w_hm3.snplist; M=$ROOT/results/munged
 
 echo "### annotate rsIDs (hg38 map) ###"
-python "$ROOT/scripts/annotate_pd_xanc.py"
+python "$ROOT/scripts/2_munge/annotate_pd_xanc.py"
 GP2N=$(awk '$1=="GP2"{print $2}' "$M/pd_xanc.N"); LON=$(awk '$1=="LOESCH"{print $2}' "$M/pd_xanc.N")
 echo "derived N: GP2=$GP2N  Loesch=$LON"
 
