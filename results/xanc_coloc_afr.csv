@@ -1,0 +1,4 @@
+locus	eur_rho	afr_rho	ci_low	ci_high	p	univ_p_rls	univ_p_trait
+RLS x short-sleep @ MEIS1	+0.43	-0.261	-0.773	0.166	0.22	2.9e-07	0.00041
+RLS x short-sleep @ PTPRD	+0.51	-0.274	-1	0.278	0.31	0.00066	0.0023
+RLS x PD @ TOX3	-0.53	-0.758	-1	-0.428	2.51e-05	5.1e-05	2.3e-10
