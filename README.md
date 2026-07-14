@@ -108,14 +108,6 @@ RLS-anchored steps additionally require the multi-ancestry RLS summary statistic
 access-controlled through Akcimen et al., so full end-to-end re-execution depends on obtaining that
 data. Every step, parameter, and data source is documented for transparency.
 
-## Citation
-
-Please cite the manuscript (citation and DOI to be added on publication).
-
-## Contact
-
-Can Sevilmis - ORCID [0000-0002-9180-1924](https://orcid.org/0000-0002-9180-1924)
-
 ## License
 
 MIT - see [LICENSE](LICENSE).
