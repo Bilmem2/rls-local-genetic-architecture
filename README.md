@@ -52,31 +52,42 @@ Scripts are grouped by pipeline stage; run the stages in order (or use `run_all.
 ### `scripts/2_munge/` - download and harmonize all GWAS
 - RLS: `16_munge_akcimen.sh` (Akcimen EUR), `dl_rls_xanc.sh` + `munge_rls_xanc.sh` (multi-ancestry AFR/AMR)
 - PD: `pd_01_download.sh` + `pd_02_munge.sh` (Nalls + FinnGen), `munge_pd_rizig.sh` (AFR), `munge_pd_xanc.sh` + `annotate_pd_xanc.py` (GP2 EUR / Loesch AMR), `munge_pd_largepd.sh` (LARGE-PD AMR)
-- Panel: `annotate_sleep.sh` (rsID annotation), `munge_panel.sh` (psychiatric + sleep), `munge_insomnia.sh`, `munge_sleep2.sh` (OSA + sleep duration), `munge_sleep3.sh` (sleep-duration rsID fix), `munge_rg_daytime.sh` (daytime sleepiness), `narcolepsy_fix3.sh` (narcolepsy)
+- Panel: `annotate_sleep.sh` (rsID annotation), `munge_panel.sh` (psychiatric + sleep), `munge_insomnia.sh`, `munge_sleep2.sh` (OSA + sleep duration), `munge_sleep3.sh` (sleep-duration rsID fix), `munge_rg_daytime.sh` (daytime sleepiness), `munge_narcolepsy_ollila.sh` (narcolepsy, Ollila 2023 EUR)
 
 ### `scripts/3_global_rg/` - LDSC genetic correlation
 - `panel_rg_akcimen.sh` (primary: RLS-Akcimen x panel), `panel_rg.sh` (RLS + PD x panel), `insomnia_rg.sh`, `pd_03_rg.sh` (PD x RLS)
 
 ### `scripts/4_local_rg_lava/` - LAVA local genetic correlation
-- `panel_lava.R` (genome-wide bivariate local rg; `panel_lava2.R` is the parallelizable variant), `panel_lava_run.sh` / `panel_lava2_run.sh` (runners), `pd_xanc_run_lava.sh` (cross-ancestry LAVA at TOX3)
+- `panel_lava.R` (genome-wide bivariate local rg; `panel_lava2.R` is the parallelizable variant), `panel_lava_run.sh` / `panel_lava2_run.sh` (runners)
+- `pd_05_lava.R` (the genome-wide LAVA engine driven by `LAVA_PAIRS`), `pd_xanc_run_lava.sh` (cross-ancestry and GP2 scans, incl. TOX3; calls `pd_05_lava.R`)
+- `run_narco_lava.R` (narcolepsy x anchors, after the switch to Ollila 2023)
 
 ### `scripts/5_coloc/` - colocalization (coloc.abf)
-- `coloc_screen.R` (systematic screen of every significant local hit -> `results/coloc_screen.tsv`), plus targeted runs `coloc_rlspd.R` (RLS x PD incl. TOX3), `coloc_meis1.R`, `coloc_chr1.R` (each with a `.sh` runner that extracts the region and calls the R script)
+- `coloc_screen.R` (systematic screen of every significant local hit; the screen behind `results/coloc_screen_full_supplementary.csv`), plus targeted runs `coloc_rlspd.R` (RLS x PD incl. TOX3), `coloc_meis1.R`, `coloc_chr1.R` (each with a `.sh` runner that extracts the region and calls the R script), and `run_narco_coloc.R` (narcolepsy hits)
 
 ### `scripts/6_cross_ancestry_tox3/` - TOX3/CASC16 cross-ancestry
-- `forest_tox3.py` (local-rg forest across datasets and ancestries), `betabeta_extract.sh` + `betabeta_plot.py` (per-SNP effect concordance)
+- `run_xanc_coloc_afr.R` (African-ancestry local rg at every colocalizing locus; the TOX3 row reproduces the primary estimate and acts as a positive control)
+- `forest_tox3.py` (local-rg forest across datasets and ancestries; Figure 5), `betabeta_extract.sh` + `betabeta_plot.py` (per-SNP effect concordance)
 
 ### `scripts/7_figures/`
-- `forest_rg.R` (global-rg forest plot)
+- `forest_rg.R` (global-rg forest, Figure 2), `coloc_selectivity.py` (local rg against colocalization posterior, Figure 3)
 
-`results/coloc_screen_full_supplementary.csv` - the complete LAVA + coloc screen (all 73 significant
-local correlations carried to colocalization; **Supplementary Table S1** of the paper).
+Both read their numbers from the tables in `results/`, so a figure cannot drift away from the
+reported values.
+
+## Results
+
+`results/` holds the machine-readable numbers behind the manuscript; `results/README.md` describes
+each file. In brief: `global_genetic_correlation_ldsc.csv` (LDSC, Table 2), `colocalization_hits.csv`
+(Table 3), `coloc_screen_full_supplementary.csv` (all 74 significant local correlations carried to
+colocalization, **Supplementary Table S1**), `tox3_crossancestry_local_rg.csv` (Figure 5), and
+`xanc_coloc_afr.csv` (African-ancestry check at the colocalizing loci).
 
 ## Software
 
 - **LDSC** v1.0.1 (Python-3 port), conda env: Python 3.9, numpy 1.23.5, scipy 1.9.3, pandas 1.4.4
 - **LAVA** v0.1.5 - R 4.3.3
-- **coloc** (`coloc.abf`) - R
+- **coloc** v5.2.3 (`coloc.abf`) - R 4.3.3
 - **PLINK** v1.9 / v2.0
 - LD reference: 1000 Genomes Phase 3 (EUR / AFR / AMR); HapMap3 SNP list for munging
 
