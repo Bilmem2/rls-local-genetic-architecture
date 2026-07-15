@@ -45,8 +45,11 @@ pd     <- grab("Parkinson's disease", "rg"); pd.se  <- grab("Parkinson's disease
 rls_pd <- pick("RLS", "Parkinson's disease", "rg")   # the null anchor-anchor correlation
 
 n <- length(tr); y <- n:1; off <- 0.19
+# Bonferroni over every trait pair tested against the anchor (as in the manuscript), not merely
+# the subset plotted here. Counted from the table so the two cannot drift apart.
+n_tests <- sum(d$anchor == "RLS")
 col.rls <- "#1f6feb"; col.pd <- "#c0873a"
-sig <- rls.p < 0.05/n
+sig <- rls.p < 0.05/n_tests
 png(OUT, width=2700, height=2050, res=300, type="cairo")
 par(mar=c(5,9.5,3.2,1.5))
 plot(NA, xlim=c(-0.42,0.63), ylim=c(0.5,n+0.5), yaxt="n", xlab="Genetic correlation rg (95% CI)", ylab="",
@@ -62,7 +65,7 @@ points(pd, y-off, pch=21, col=col.pd, bg="white", cex=1.05)
 legend("bottomright", legend=c("RLS (rls_akcimen)","PD (Nalls 2019)"), col=c(col.rls,col.pd),
        pch=c(19,21), lwd=2.2, bty="n", cex=0.92, pt.bg="white")
 mtext(sprintf("Filled = Bonferroni-significant (RLS, p<0.05/%d).  RLS×PD global rg = %.3f (null) — their link is local (LAVA/TOX3), not global.",
-              n, round_half_up(rls_pd, 3)),
+              n_tests, round_half_up(rls_pd, 3)),
       side=1, line=3.6, cex=0.68, col="gray35")
 dev.off()
 cat("wrote", OUT, "\n")
