@@ -32,7 +32,7 @@ LABELS = [("2:65938003",  "insomnia",    "$MEIS1$ $\\times$ insomnia"),
 def labfor(r):
     reg = r["Region_hg19"].replace("chr", "")
     for start, tr, lab in LABELS:
-        if reg.startswith(start) and tr.split()[0].lower() in r["Trait"].lower():
+        if reg.startswith(start) and tr.split()[0].lower() in r["Trait_2"].lower():
             return lab
     return None
 

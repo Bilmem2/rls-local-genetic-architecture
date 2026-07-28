@@ -41,7 +41,7 @@ step bash    scripts/2_munge/munge_narcolepsy_ollila.sh   # narcolepsy (Ollila 2
 
 # ---- Stage 3: global genetic correlation (LDSC) ----
 step bash    scripts/3_global_rg/panel_rg.sh
-step bash    scripts/3_global_rg/panel_rg_akcimen.sh      # primary (RLS-Akcimen anchor)
+step bash    scripts/3_global_rg/panel_rg_akcimen.sh      # primary (RLS-Akcimen as phenotype 1)
 step bash    scripts/3_global_rg/insomnia_rg.sh
 step bash    scripts/3_global_rg/pd_03_rg.sh
 

@@ -4,8 +4,9 @@ Analysis code for the manuscript **"Local Genetic Architecture of Restless Legs 
 Reveals a Neuropsychiatric Hub and Cross-Ancestry Antagonistic Pleiotropy with Parkinson's
 Disease."**
 
-The pipeline is anchored on Restless Legs Syndrome (RLS) and Parkinson's disease (PD) and screens
-a panel of sleep, psychiatric, and movement traits through four layers:
+The pipeline is anchored on Restless Legs Syndrome (RLS) and screens
+a panel of sleep, psychiatric, and movement traits, including Parkinson's disease (PD), through
+four layers:
 
 1. **Global** genetic correlation (LDSC)
 2. **Local** genetic correlation (LAVA, per ~2,495 LD blocks)
@@ -60,7 +61,7 @@ Scripts are grouped by pipeline stage; run the stages in order (or use `run_all.
 ### `scripts/4_local_rg_lava/` - LAVA local genetic correlation
 - `panel_lava.R` (genome-wide bivariate local rg; `panel_lava2.R` is the parallelizable variant), `panel_lava_run.sh` / `panel_lava2_run.sh` (runners)
 - `pd_05_lava.R` (the genome-wide LAVA engine driven by `LAVA_PAIRS`), `pd_xanc_run_lava.sh` (cross-ancestry and GP2 scans, incl. TOX3; calls `pd_05_lava.R`)
-- `run_narco_lava.R` (narcolepsy x anchors, after the switch to Ollila 2023)
+- `run_narco_lava.R` (narcolepsy against RLS and PD, after the switch to Ollila 2023)
 
 ### `scripts/5_coloc/` - colocalization (coloc.abf)
 - `coloc_screen.R` (systematic screen of every significant local hit; the screen behind `results/coloc_screen_full_supplementary.csv`), plus targeted runs `coloc_rlspd.R` (RLS x PD incl. TOX3), `coloc_meis1.R`, `coloc_chr1.R` (each with a `.sh` runner that extracts the region and calls the R script), and `run_narco_coloc.R` (narcolepsy hits)

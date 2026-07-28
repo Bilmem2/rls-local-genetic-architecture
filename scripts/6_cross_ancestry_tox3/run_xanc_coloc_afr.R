@@ -2,8 +2,8 @@
 # Cross-ancestry (AFR) local genetic correlation at the European colocalizing loci.
 #
 # Trait specification mirrors the main panel analysis (scripts/4_local_rg_lava/panel_lava.R):
-# binary anchors (RLS, PD) carry case/control counts, every other trait is continuous
-# (NA NA). The AFR anchor counts are the same ones used by the primary cross-ancestry
+# the case-control disorders (RLS, PD) carry case/control counts, every other trait is continuous
+# (NA NA). The AFR phen1 counts are the same ones used by the primary cross-ancestry
 # scan (scripts/4_local_rg_lava/pd_xanc_run_lava.sh): rls_afr 2,176/153,313 and pd_rizig_afr 1,488/196,430.
 #
 # The TOX3 job is a positive control: with this specification it must reproduce the
@@ -21,7 +21,7 @@ M    <- file.path(ROOT,"results/munged")
 Ldir <- file.path(ROOT,"results/lava"); OUT <- file.path(Ldir,"xanc_coloc_afr.csv")
 loci <- read.loci(LOCF)
 
-# binary anchors get case/control counts; every other trait -> continuous (NA NA)
+# the two case-control disorders get case/control counts; every other trait -> continuous (NA NA)
 cc <- list(rls_afr=c(2176,153313), pd_rizig_afr=c(1488,196430))
 info_row <- function(ph){ f <- file.path(M, paste0(ph, ".sumstats.gz"))
   if (!is.null(cc[[ph]])) sprintf("%s %d %d %s", ph, cc[[ph]][1], cc[[ph]][2], f)

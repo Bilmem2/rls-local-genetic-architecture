@@ -2,7 +2,7 @@
 # panel_lava2.R — parallelizable: PAIR_GROUP env selects a disjoint subset + own CSV.
 #   pdsig  = PD x {insomnia,anx,mdd,ptsd,osa,sleepdur,rbd}
 #   rlssig = rls_akcimen x {anx,mdd,ptsd,osa,sleepdur,rbd}
-#   tail   = both anchors x {scz,bip,chronotype,daytime,sleepdur_long,narcolepsy}
+#   tail   = RLS and PD x {scz,bip,chronotype,daytime,sleepdur_long,narcolepsy}
 #   (rlsak_pd + rlsak_insomnia already done in lava_panel_bivariate.csv)
 suppressMessages(library(LAVA))
 GRP <- Sys.getenv("PAIR_GROUP","pdsig")
@@ -24,15 +24,15 @@ read_rg_tab <- function(logf){ if(!file.exists(logf)) return(NULL); L<-readLines
   j<-i[1]+1; k<-j; while(k+1<=length(L) && nchar(trimws(L[k+1]))>0) k<-k+1
   tab<-read.table(text=L[j:k],header=TRUE,stringsAsFactors=FALSE,fill=TRUE)
   tab$trait<-sub("\\.sumstats\\.gz$","",basename(tab$p2)); tab }
-anchor_intercept <- function(logf){ L<-readLines(logf,warn=FALSE)
+phen1_intercept <- function(logf){ L<-readLines(logf,warn=FALSE)
   i<-grep("Heritability of phenotype 1",L)[1]; seg<-L[i:min(i+10,length(L))]
   ln<-grep("Intercept:",seg,value=TRUE)[1]; as.numeric(sub(".*Intercept:\\s*([0-9.]+).*","\\1",ln)) }
-build_ovl <- function(file,anchor,trait,tab,aint){ r<-tab[tab$trait==trait,]
+build_ovl <- function(file,phen1,trait,tab,aint){ r<-tab[tab$trait==trait,]
   m<-matrix(c(aint,as.numeric(r$gcov_int[1]),as.numeric(r$gcov_int[1]),as.numeric(r$h2_int[1])),2,
-            dimnames=list(c(anchor,trait),c(anchor,trait))); write.table(round(cov2cor(m),5),file,quote=FALSE) }
+            dimnames=list(c(phen1,trait),c(phen1,trait))); write.table(round(cov2cor(m),5),file,quote=FALSE) }
 
-rls_tab<-read_rg_tab(file.path(RGDIR,"rls_akcimen_vs_panel.log")); rls_aint<-anchor_intercept(file.path(RGDIR,"rls_akcimen_vs_panel.log"))
-pd_tab <-read_rg_tab(file.path(RGDIR,"pd_vs_panel.log")); pd_aint<-anchor_intercept(file.path(RGDIR,"pd_vs_panel.log"))
+rls_tab<-read_rg_tab(file.path(RGDIR,"rls_akcimen_vs_panel.log")); rls_aint<-phen1_intercept(file.path(RGDIR,"rls_akcimen_vs_panel.log"))
+pd_tab <-read_rg_tab(file.path(RGDIR,"pd_vs_panel.log")); pd_aint<-phen1_intercept(file.path(RGDIR,"pd_vs_panel.log"))
 for(ex in c("insomnia","daytime")){ et<-read_rg_tab(file.path(RGDIR,paste0("pd_nalls_vs_",ex,".log"))); if(!is.null(et)) pd_tab<-rbind(pd_tab,et) }
 
 G <- list(
@@ -45,20 +45,20 @@ G <- list(
                 c("rlsak_scz","rls_akcimen","scz","rls"),c("rlsak_bip","rls_akcimen","bip","rls"),c("rlsak_chronotype","rls_akcimen","chronotype","rls"),
                 c("rlsak_daytime","rls_akcimen","daytime_sleepiness","rls"),c("rlsak_sleepdurlong","rls_akcimen","sleepdur_eur_long","rls"),c("rlsak_narco","rls_akcimen","narcolepsy","rls")))
 PAIRS <- G[[GRP]]; first <- TRUE
-for(P in PAIRS){ tag<-P[1]; anchor<-P[2]; trait<-P[3]; src<-P[4]
+for(P in PAIRS){ tag<-P[1]; phen1<-P[2]; trait<-P[3]; src<-P[4]
   tab <- if(src=="rls") rls_tab else pd_tab; aint <- if(src=="rls") rls_aint else pd_aint
   if(is.null(tab) || !(trait %in% tab$trait)){ cat("  skip (no rg):",tag,"\n"); next }
   info<-file.path(Ldir,paste0("info.",tag,".txt")); ovl<-file.path(Ldir,paste0("ovl.",tag,".txt"))
-  write_info(info,anchor,trait)
-  if(!tryCatch({build_ovl(ovl,anchor,trait,tab,aint);TRUE},error=function(e) FALSE)) next
-  cat(sprintf("\n>>> [%s] %s x %s\n",tag,anchor,trait)); flush.console()
-  inp <- tryCatch(process.input(info,ovl,REF,c(anchor,trait)),error=function(e){cat(" input err\n");NULL}); if(is.null(inp)) next
+  write_info(info,phen1,trait)
+  if(!tryCatch({build_ovl(ovl,phen1,trait,tab,aint);TRUE},error=function(e) FALSE)) next
+  cat(sprintf("\n>>> [%s] %s x %s\n",tag,phen1,trait)); flush.console()
+  inp <- tryCatch(process.input(info,ovl,REF,c(phen1,trait)),error=function(e){cat(" input err\n");NULL}); if(is.null(inp)) next
   res<-list(); np<-0; ng<-0
   for(i in 1:n){ if(i%%400==0) message(sprintf("   [%s] %d/%d gate %d hit %d",tag,i,n,ng,np))
     loc<-tryCatch(process.locus(loci[i,],inp),error=function(e) NULL); if(is.null(loc)) next
     u<-tryCatch(run.univ(loc),error=function(e) NULL); if(is.null(u)) next
-    if(any(u$phen==anchor & u$p<ut) && any(u$phen==trait & u$p<ut)){ ng<-ng+1
-      b<-tryCatch(run.bivar(loc,phenos=c(anchor,trait)),error=function(e) NULL)
+    if(any(u$phen==phen1 & u$p<ut) && any(u$phen==trait & u$p<ut)){ ng<-ng+1
+      b<-tryCatch(run.bivar(loc,phenos=c(phen1,trait)),error=function(e) NULL)
       if(!is.null(b) && nrow(b)>0){ b$pair<-tag; b$loc<-as.character(loci$LOC[i]); b$chr<-loc$chr; b$start<-loc$start; b$stop<-loc$stop
         res[[length(res)+1]]<-b; np<-np+1; cat(sprintf("   [%s] %s chr%s rho=%.3f p=%.2g\n",tag,loci$LOC[i],loc$chr,b$rho,b$p)); flush.console() } } }
   cat(sprintf("   [%s] gate-passed=%d hits=%d\n",tag,ng,np))

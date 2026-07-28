@@ -1,13 +1,13 @@
 #!/usr/bin/env Rscript
 # Coloc for the narcolepsy (Ollila) LAVA hits (p<1e-3). narco EUR file has no chr column,
-# so region SNPs are taken from the anchor (chr:pos) and matched into narco by rsID.
+# so region SNPs are taken from the phen1 (chr:pos) and matched into narco by rsID.
 suppressMessages({ if(!requireNamespace("coloc",quietly=TRUE)){cat("ERROR: coloc missing\n");quit(status=2)}; library(coloc) })
 ROOT<-"/path/to/analysis"; G<-file.path(ROOT,"data/gwas")
 LAVA<-file.path(ROOT,"results/lava/lava_narco_ollila.csv")
 NARCO<-file.path(G,"sleep/narcolepsy_ollila/CHR_Whites_info0.7.noHLA.noSig.hetP1e-5.LDSC.N.txt.gz")
 OUT<-file.path(ROOT,"results/coloc_narco_ollila.tsv")
 
-# anchor extractors: emit rsid beta se over a chr:pos window
+# phen1 extractors: emit rsid beta se over a chr:pos window
 acfg<-list(
  rls_akcimen=list(f=file.path(G,"rls/akcimen2026_EUR_RLS.txt"),rd="cat",s=0.0547,N=676175,
    awk='$2==c&&$3>=lo&&$3<=hi&&$10~/^rs/{print $10,$6,$7}'),
@@ -15,7 +15,7 @@ acfg<-list(
    awk='NR>1&&$1==c&&$2>=lo&&$2<=hi&&$9~/^rs/{print $9,$5,$6}'))
 NARCO_S<-0.05; NARCO_N<-61727   # Ollila EUR meta: Neff 12,219 -> ~3,050 cases / ~58,700 controls (s~0.05)
 
-get_anchor<-function(tr,chr,lo,hi){cf<-acfg[[tr]]
+get_phen1<-function(tr,chr,lo,hi){cf<-acfg[[tr]]
   cmd<-sprintf("%s '%s' | awk -v c=%s -v lo=%.0f -v hi=%.0f '%s'",cf$rd,cf$f,chr,lo,hi,cf$awk)
   d<-tryCatch(read.table(pipe(cmd),header=FALSE,stringsAsFactors=FALSE),error=function(e)NULL)
   if(is.null(d)||nrow(d)<10)return(NULL); names(d)<-c("rsid","b","se"); d[!duplicated(d$rsid)&is.finite(d$b)&is.finite(d$se)&d$se>0,]}
@@ -27,7 +27,7 @@ get_narco<-function(rsids){tf<-tempfile(); writeLines(rsids,tf)
 hits<-read.csv(LAVA,stringsAsFactors=FALSE); hits<-hits[hits$p<1e-3,]
 cat(sprintf("narco LAVA hits p<1e-3: %d\n",nrow(hits))); res<-list()
 for(k in 1:nrow(hits)){h<-hits[k,]; anc<-ifelse(grepl("^rls",h$pair),"rls_akcimen","pd_nalls")
-  a<-get_anchor(anc,h$chr,h$start,h$stop); if(is.null(a)){cat("  no anchor SNPs:",h$pair,h$loc,"\n");next}
+  a<-get_phen1(anc,h$chr,h$start,h$stop); if(is.null(a)){cat("  no phen1 SNPs:",h$pair,h$loc,"\n");next}
   b<-get_narco(a$rsid); if(is.null(b)){cat("  no narco SNPs:",h$pair,h$loc,"\n");next}
   cm<-intersect(a$rsid,b$rsid); if(length(cm)<20){cat("  <20 shared:",h$pair,h$loc,length(cm),"\n");next}
   A<-a[match(cm,a$rsid),]; B<-b[match(cm,b$rsid),]
