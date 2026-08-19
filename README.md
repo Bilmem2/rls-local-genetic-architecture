@@ -1,8 +1,7 @@
 # Local genetic architecture of Restless Legs Syndrome
 
-Analysis code for the manuscript **"Local Genetic Architecture of Restless Legs Syndrome
-Reveals a Neuropsychiatric Hub and Cross-Ancestry Antagonistic Pleiotropy with Parkinson's
-Disease."**
+Analysis code for the manuscript **"Restless Legs Syndrome Reveals a Neuropsychiatric Hub and
+Cross-Ancestry Antagonistic Pleiotropy with Parkinson's Disease."**
 
 The pipeline is anchored on Restless Legs Syndrome (RLS) and screens
 a panel of sleep, psychiatric, and movement traits, including Parkinson's disease (PD), through
@@ -10,8 +9,9 @@ four layers:
 
 1. **Global** genetic correlation (LDSC)
 2. **Local** genetic correlation (LAVA, per ~2,495 LD blocks)
-3. **Colocalization** (`coloc.abf`, at every significant local hit)
-4. **Cross-ancestry** replication of the TOX3 RLS-PD signal (EUR / AFR / AMR)
+3. **Colocalization** (`coloc.abf` at every block passing the local screen, plus prior/window
+   sensitivity and `coloc.susie` at *MEIS1*)
+4. **Cross-ancestry** comparison of the TOX3 RLS-PD signal (EUR / AFR / AMR)
 
 Summary-statistic files and LD reference panels are **not** redistributed here (they are public or
 collaborator-provided; see **Data**). The scripts document every input and its source.
