@@ -50,10 +50,14 @@ step bash    scripts/4_local_rg_lava/panel_lava_run.sh    # genome-wide (panel_l
 step bash    scripts/4_local_rg_lava/pd_xanc_run_lava.sh  # cross-ancestry at TOX3
 
 # ---- Stage 5: colocalization (coloc.abf) ----
-step Rscript scripts/5_coloc/coloc_screen.R               # systematic screen of every significant local hit
+step Rscript scripts/5_coloc/coloc_screen.R               # systematic screen (subset of trait pairs)
+step Rscript scripts/5_coloc/coloc_screen_full.R          # full panel screen -> Supplementary Table S3
 step bash    scripts/5_coloc/coloc_rlspd.sh               # RLS x PD (incl. TOX3)
 step bash    scripts/5_coloc/coloc_meis1.sh
 step bash    scripts/5_coloc/coloc_chr1.sh
+step Rscript scripts/5_coloc/coloc_prior_sens.R           # prior sensitivity   -> Supp. Table S4A
+step Rscript scripts/5_coloc/coloc_window_sens.R          # window sensitivity  -> Supp. Table S4B
+step Rscript scripts/5_coloc/coloc_susie_meis1.R          # coloc-SuSiE @ MEIS1 -> Supp. Table S4C
 
 # ---- Stage 6: TOX3/CASC16 cross-ancestry ----
 step Rscript scripts/6_cross_ancestry_tox3/run_xanc_coloc_afr.R  # AFR local rg at every coloc locus

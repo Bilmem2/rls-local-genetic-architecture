@@ -28,7 +28,8 @@ After setting the paths (see **Configuration**), the top-level driver runs every
 2. **Munge** - download and harmonize every GWAS (RLS, PD, panel).
 3. **Global rg** - LDSC: RLS x panel and PD x panel.
 4. **Local rg** - LAVA genome-wide, then cross-ancestry LAVA at TOX3.
-5. **Coloc** - systematic `coloc.abf` screen, then targeted loci.
+5. **Coloc** - systematic `coloc.abf` screen, targeted loci, then the robustness analyses
+   (prior, window, coloc-SuSiE).
 6. **Cross-ancestry** - TOX3 forest + per-SNP (beta-beta) concordance.
 7. **Figures**.
 
@@ -64,7 +65,8 @@ Scripts are grouped by pipeline stage; run the stages in order (or use `run_all.
 - `run_narco_lava.R` (narcolepsy against RLS and PD, after the switch to Ollila 2023)
 
 ### `scripts/5_coloc/` - colocalization (coloc.abf)
-- `coloc_screen.R` (systematic screen of every significant local hit; the screen behind `results/coloc_screen_full_supplementary.csv`), plus targeted runs `coloc_rlspd.R` (RLS x PD incl. TOX3), `coloc_meis1.R`, `coloc_chr1.R` (each with a `.sh` runner that extracts the region and calls the R script), and `run_narco_coloc.R` (narcolepsy hits)
+- `coloc_screen.R` (screen over a subset of trait pairs) and `coloc_screen_full.R` (the full-panel screen behind `results/coloc_screen_full_supplementary.csv`), plus targeted runs `coloc_rlspd.R` (RLS x PD incl. TOX3), `coloc_meis1.R`, `coloc_chr1.R` (each with a `.sh` runner that extracts the region and calls the R script), and `run_narco_coloc.R` (narcolepsy hits)
+- robustness: `coloc_prior_sens.R` (PP.H4 across colocalization priors), `coloc_window_sens.R` (PP.H4 across window widths around each lead variant), `coloc_susie_meis1.R` (coloc-SuSiE at *MEIS1*, allowing multiple causal variants per trait) - together **Supplementary Table S4**
 
 ### `scripts/6_cross_ancestry_tox3/` - TOX3/CASC16 cross-ancestry
 - `run_xanc_coloc_afr.R` (African-ancestry local rg at every colocalizing locus; the TOX3 row reproduces the primary estimate and acts as a positive control)
@@ -79,16 +81,20 @@ reported values.
 ## Results
 
 `results/` holds the machine-readable numbers behind the manuscript; `results/README.md` describes
-each file. In brief: `global_genetic_correlation_ldsc.csv` (LDSC, Table 2), `colocalization_hits.csv`
-(Table 3), `coloc_screen_full_supplementary.csv` (all 74 significant local correlations carried to
-colocalization, **Supplementary Table S1**), `tox3_crossancestry_local_rg.csv` (Figure 5), and
-`xanc_coloc_afr.csv` (African-ancestry check at the colocalizing loci).
+each file. In brief: `global_genetic_correlation_ldsc.csv` (LDSC, **Supplementary Table S2**),
+`colocalization_hits.csv` (**Table 1**), `coloc_screen_full_supplementary.csv` (all 74 local
+correlations carried to colocalization, with Bonferroni and Benjamini-Hochberg columns over the
+2,821 bivariate tests, **Supplementary Table S3**), `coloc_prior_sensitivity.tsv` and
+`coloc_window_sensitivity.tsv` plus `susie_meis1_rls_*.csv` (**Supplementary Table S4**),
+`tox3_crossancestry_local_rg.csv` (Figure 5), and `xanc_coloc_afr.csv` (African-ancestry check at
+the colocalizing loci).
 
 ## Software
 
 - **LDSC** v1.0.1 (Python-3 port), conda env: Python 3.9, numpy 1.23.5, scipy 1.9.3, pandas 1.4.4
 - **LAVA** v0.1.5 - R 4.3.3
-- **coloc** v5.2.3 (`coloc.abf`) - R 4.3.3
+- **coloc** v5.2.3 (`coloc.abf` and `coloc.susie`) - R 4.3.3
+- **susieR** v0.14.2 - R 4.3.3 (multi-signal fine-mapping behind coloc-SuSiE)
 - **PLINK** v1.9 / v2.0
 - LD reference: 1000 Genomes Phase 3 (EUR / AFR / AMR); HapMap3 SNP list for munging
 
@@ -107,8 +113,8 @@ Under the analysis root the scripts expect `data/gwas/`, `data/ldsc_ref/`, `data
 
 ## Data
 
-All GWAS summary statistics, with releases and accessions, are listed in **Table 1 of the
-manuscript**. Every dataset is publicly available except the multi-ancestry RLS GWAS, which was
+All GWAS summary statistics, with releases and accessions, are listed in **Supplementary Table S1
+of the manuscript**. Every dataset is publicly available except the multi-ancestry RLS GWAS, which was
 provided by Akcimen et al. Raw sumstats and LD panels are omitted here for size and licensing; the
 download scripts record their sources.
 

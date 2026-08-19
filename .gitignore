@@ -4,6 +4,8 @@ data/
 *.sumstats.gz
 *.gz
 *.tsv
+# ...but the small curated result tables under results/ belong in the repo
+!results/*.tsv
 *.tsv.gz
 *.vcf
 *.vcf.gz

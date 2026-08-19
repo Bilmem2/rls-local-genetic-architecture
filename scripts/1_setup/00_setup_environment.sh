@@ -46,3 +46,6 @@ sed -i 's/openfunc = bz2.BZ2File/openfunc = lambda f: bz2.open(f, "rt")/' munge_
 
 # 3. LAVA 0.1.5 was already installed in system R 4.3.3 (user library); confirmed loading.
 echo "environment build recorded."
+
+# coloc-SuSiE (Supplementary Table S4) additionally needs susieR
+Rscript -e 'if(!requireNamespace("susieR",quietly=TRUE)) install.packages("susieR",repos="https://cloud.r-project.org")'
