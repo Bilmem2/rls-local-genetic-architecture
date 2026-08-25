@@ -1,7 +1,7 @@
 # Local genetic architecture of Restless Legs Syndrome
 
-Analysis code for the manuscript **"Restless Legs Syndrome Reveals a Neuropsychiatric Hub and
-Cross-Ancestry Antagonistic Pleiotropy with Parkinson's Disease."**
+Analysis code for the manuscript **"Local Genetic Architecture of Restless Legs Syndrome and
+Parkinson's Disease Across Sleep, Psychiatric, and Movement Disorders."**
 
 The pipeline is anchored on Restless Legs Syndrome (RLS) and screens
 a panel of sleep, psychiatric, and movement traits, including Parkinson's disease (PD), through
