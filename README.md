@@ -63,6 +63,7 @@ Scripts are grouped by pipeline stage; run the stages in order (or use `run_all.
 - `panel_lava.R` (genome-wide bivariate local rg; `panel_lava2.R` is the parallelizable variant), `panel_lava_run.sh` / `panel_lava2_run.sh` (runners)
 - `pd_05_lava.R` (the genome-wide LAVA engine driven by `LAVA_PAIRS`), `pd_xanc_run_lava.sh` (cross-ancestry and GP2 scans, incl. TOX3; calls `pd_05_lava.R`)
 - `run_narco_lava.R` (narcolepsy against RLS and PD, after the switch to Ollila 2023)
+- `known_vs_novel_blocks.R` (for each of the 74 screened blocks, whether either trait's GWAS carries a genome-wide-significant variant in the block; reuses the readers of `coloc_screen_full.R`, so it runs after the coloc screen)
 
 ### `scripts/5_coloc/` - colocalization (coloc.abf)
 - `coloc_screen.R` (screen over a subset of trait pairs) and `coloc_screen_full.R` (the full-panel screen behind `results/coloc_screen_full_supplementary.csv`), plus targeted runs `coloc_rlspd.R` (RLS x PD incl. TOX3), `coloc_meis1.R`, `coloc_chr1.R` (each with a `.sh` runner that extracts the region and calls the R script), and `run_narco_coloc.R` (narcolepsy hits)
@@ -86,8 +87,9 @@ each file. In brief: `global_genetic_correlation_ldsc.csv` (LDSC, **Supplementar
 correlations carried to colocalization, with Bonferroni and Benjamini-Hochberg columns over the
 2,821 bivariate tests, **Supplementary Table S3**), `coloc_prior_sensitivity.tsv` and
 `coloc_window_sensitivity.tsv` plus `susie_meis1_rls_*.csv` (**Supplementary Table S4**),
-`tox3_crossancestry_local_rg.csv` (Figure 5), and `xanc_coloc_afr.csv` (African-ancestry check at
-the colocalizing loci).
+`tox3_crossancestry_local_rg.csv` (Figure 5), `xanc_coloc_afr.csv` (African-ancestry check at
+the colocalizing loci), and `known_vs_novel_blocks.csv` (genome-wide-significance status of every
+screened block, the GWS column of Supplementary Table S3).
 
 ## Software
 

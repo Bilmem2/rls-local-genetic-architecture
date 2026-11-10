@@ -23,6 +23,14 @@ Machine-readable primary results behind the manuscript.
   both-trait local-heritability gate), `q_BH` (Benjamini-Hochberg over the same tests) and
   `survives_bonferroni`. All 74 rows are FDR-significant; 14 also survive Bonferroni
   (manuscript Supplementary Table S3).
+- **`known_vs_novel_blocks.csv`** - for each of the 74 screened blocks, the smallest P and its
+  variant in each trait's GWAS within the block, and a class: `both`, `trait 1 only`, `trait 2 only`
+  or `neither` carry a genome-wide-significant variant (P < 5e-8). Of the 71 assessable rows, 10 are
+  `both`, 14 `trait 1 only`, 8 `trait 2 only` and 39 `neither`; all seven colocalizing pairs carry
+  a genome-wide-significant variant in at least one trait. The three narcolepsy rows cannot be
+  assessed: the public Ollila release removes the MHC region and every variant with P < 5e-8.
+  Block membership is by rsID against the 1000 Genomes EUR reference, so hg38 and hg19 files are
+  treated alike (GWS column of manuscript Supplementary Table S3).
 - **`coloc_prior_sensitivity.tsv`** - PP.H4 for each prioritized locus recomputed across
   colocalization priors (p12 from 1e-6 to 5e-5, against the coloc default of 1e-5). TOX3, MEIS1
   and SKOR2 hold under the strictest prior; PTPRD falls to 0.51 and the suggestive GBA signal to

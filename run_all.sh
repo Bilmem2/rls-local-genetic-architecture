@@ -58,6 +58,7 @@ step bash    scripts/5_coloc/coloc_chr1.sh
 step Rscript scripts/5_coloc/coloc_prior_sens.R           # prior sensitivity   -> Supp. Table S4A
 step Rscript scripts/5_coloc/coloc_window_sens.R          # window sensitivity  -> Supp. Table S4B
 step Rscript scripts/5_coloc/coloc_susie_meis1.R          # coloc-SuSiE @ MEIS1 -> Supp. Table S4C
+step Rscript scripts/4_local_rg_lava/known_vs_novel_blocks.R  # GWS status of each screened block -> Supp. Table S3 (GWS)
 
 # ---- Stage 6: TOX3/CASC16 cross-ancestry ----
 step Rscript scripts/6_cross_ancestry_tox3/run_xanc_coloc_afr.R  # AFR local rg at every coloc locus
