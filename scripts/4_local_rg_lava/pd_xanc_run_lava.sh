@@ -3,10 +3,10 @@
 # FINAL cross-ancestry + newer-EUR-PD LAVA (genome-wide). RUN IN YOUR OWN WSL TERMINAL (~1-2 h total).
 #   A3  GP2-2024 EUR PD x {Akçimen,Didriksen,Schormair} RLS  (g1000_eur) — newer/independent EUR PD, beyond Nalls/TOX3
 #   AFR Rizig-2023 PD   x RLS-AFR                            (g1000_afr)
-#   AMR Loesch-2021 PD  x RLS-AMR                            (g1000_amr) — very low power (N~1.5k), expect null
+#   AMR Loesch-2021 PD  x RLS-AMR                            (g1000_amr) — low power (N~1.5k)
 #   Each = pd_05_lava.R genome-wide scan (2495 blocks; both-trait univ gate p<0.05/2495; Bonferroni+BH).
 #   Identity sample-overlap (independent-cohort assumption); EUR-hg19 blocks (rsID-matched, build-agnostic).
-#   Smoke-tested @ TOX3:  GP2 rho=-0.49 (p2e-8) | AFR rho=-0.73 (p3e-5) | AMR rho=-0.33 (p0.20, underpowered).
+#   Estimates at TOX3:  GP2 rho=-0.49 (p2e-8) | AFR rho=-0.73 (p3e-5) | AMR rho=-0.33 (p0.20, underpowered).
 # =============================================================================
 set -uo pipefail
 ROOT=/path/to/analysis
@@ -37,4 +37,4 @@ runscan AFR g1000_afr "afr,$L/info.afr.txt,$L/ovl.afr.txt,pd_afr,rls_afr" "$L/la
 mk_info "$L/info.amr.txt" pd_amr 740 741 "$M/pd_loesch_amr.sumstats.gz" rls_amr 2024 91902 "$M/rls_amr.sumstats.gz"; mk_ovl "$L/ovl.amr.txt" pd_amr rls_amr
 runscan AMR g1000_amr "amr,$L/info.amr.txt,$L/ovl.amr.txt,pd_amr,rls_amr" "$L/lava_pd_rls_amr.csv"
 
-echo "### ALL DONE — results: results/lava/lava_pd_rls_{gp2,afr,amr}.csv ; tell Claude to finalize the cross-ancestry story ###"
+echo "### done: results/lava/lava_pd_rls_{gp2,afr,amr}.csv ###"

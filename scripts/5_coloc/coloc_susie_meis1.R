@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-# FULL systematic coloc screen: coloc.abf on EVERY p<1e-3 LAVA hit across ALL panel pairs.
-# Regenerates sig-hits from all lava_panel*.csv, configs all 14 traits. Output -> results/coloc_screen_full.tsv
+# coloc-SuSiE at MEIS1: RLS against insomnia, chronotype and short sleep (Supplementary Table S4C).
+# Trait readers are shared with coloc_screen_full.R.
 suppressMessages({ if(!requireNamespace("coloc",quietly=TRUE)){cat("ERROR: coloc missing\n");quit(status=2)}; library(coloc) })
 ROOT<-"/path/to/analysis"; G<-file.path(ROOT,"data/gwas"); LV<-file.path(ROOT,"results/lava")
 PTHR<-as.numeric(Sys.getenv("COLOC_P","0.001")); PAT<-Sys.getenv("COLOC_PAT","lava_panel"); TAG<-Sys.getenv("COLOC_TAG","full")
@@ -76,11 +76,9 @@ mkD<-function(d,tr){ cc<-cf[[tr]]; base<-list(beta=d$b,varbeta=d$vb,snp=d$rsid,M
 
 
 ## =====================================================================
-## MEIS1 coloc-SuSiE (ikili). coloc.abf blok basina TEK nedensel varyant
-## varsayar; SuSiE bu varsayimi kaldirip her traitte birden fazla bagimsiz
-## sinyal (credible set) arar ve set-set kolokalizasyon yapar.
-## Pencere: rs113851554 +-250 kb (standart ince-haritalama penceresi).
-## LD: 1000G EUR Faz 3 (N=503) -- kucuk panel, sonuclar buna gore yorumlanmali.
+## coloc.abf assumes a single causal variant per block. SuSiE relaxes this: it finds independent
+## signals (credible sets) in each trait and colocalizes them set by set.
+## Window: rs113851554 +-250 kb. LD: 1000 Genomes EUR Phase 3 (N=503), a small panel.
 ## =====================================================================
 suppressMessages(library(susieR))
 PLINK<-Sys.getenv("PLINK","plink")   # conda env "ldsc" puts genetics PLINK 1.9 on PATH
@@ -91,7 +89,7 @@ LO<-LEAD-RAD; HI<-LEAD+RAD
 NTOT<-list(rls_akcimen=676175, insomnia=386988, chronotype=449734, sleepdur_eur_short=445966)
 LABEL<-c(rls_akcimen="RLS", insomnia="insomnia", chronotype="chronotype", sleepdur_eur_short="short sleep")
 PARTNERS<-c("insomnia","chronotype","sleepdur_eur_short")
-cat(sprintf("pencere: chr%d:%d-%d (%d kb)\n",CHR,LO,HI,(HI-LO)/1000))
+cat(sprintf("window: chr%d:%d-%d (%d kb)\n",CHR,LO,HI,(HI-LO)/1000))
 
 ldmat<-function(snps,tag){
   writeLines(snps,file.path(WD,paste0(tag,"_snps.txt")))
@@ -112,7 +110,7 @@ ldmat<-function(snps,tag){
   M<-matrix(readBin(binf,"double",n=n*n,size=8),n,n)
   M[!is.finite(M)]<-0; diag(M)<-1
   dimnames(M)<-list(bim$rsid,bim$rsid)
-  # referans panel frekansi (RLS sumstats'inda eaf yok; LD ile ayni kaynak olsun)
+  # reference-panel allele frequency (the RLS summary statistics carry no eaf; use the LD source)
   system2(PLINK,c("--bfile",sb,"--keep-allele-order","--freq","--out",file.path(WD,tag)),
           stdout=file.path(WD,"p.log"),stderr=file.path(WD,"p.log"))
   frqf<-file.path(WD,paste0(tag,".frq"))
@@ -138,20 +136,20 @@ fitone<-function(t,d,bim,LD){
 for(pt in PARTNERS){
   cat(sprintf("\n================ RLS x %s ================\n",LABEL[[pt]]))
   a<-getreg("rls_akcimen",CHR,LO,HI); b<-getreg(pt,CHR,LO,HI)
-  if(is.null(a)||is.null(b)){cat("  veri yok\n");next}
+  if(is.null(a)||is.null(b)){cat("  no data\n");next}
   cm<-intersect(a$rsid,b$rsid)
-  cat(sprintf("  RLS %d SNP, %s %d SNP, ortak %d\n",nrow(a),LABEL[[pt]],nrow(b),length(cm)))
-  if(length(cm)<50){cat("  cok az SNP, atlandi\n");next}
-  L<-ldmat(cm,pt); if(is.null(L)){cat("  LD matrisi uretilemedi\n");next}
-  cat(sprintf("  referans panelde eslesen: %d SNP\n",nrow(L$bim)))
+  cat(sprintf("  RLS %d SNP, %s %d SNP, shared %d\n",nrow(a),LABEL[[pt]],nrow(b),length(cm)))
+  if(length(cm)<50){cat("  too few SNPs, skipped\n");next}
+  L<-ldmat(cm,pt); if(is.null(L)){cat("  LD matrix could not be built\n");next}
+  cat(sprintf("  matched in the reference panel: %d SNP\n",nrow(L$bim)))
   fa<-fitone("rls_akcimen",a,L$bim,L$LD); fb<-fitone(pt,b,L$bim,L$LD)
-  cat(sprintf("  alel hizalama  RLS: ayni %d / ters %d | %s: ayni %d / ters %d\n",
+  cat(sprintf("  allele alignment  RLS: same %d / flipped %d | %s: same %d / flipped %d\n",
       fa$nsame,fa$nflip,LABEL[[pt]],fb$nsame,fb$nflip))
   rm0<-L$refmaf
   ok<-fa$keep&fb$keep&is.finite(rm0)&rm0>0.01
   ok[is.na(ok)]<-FALSE
-  cat(sprintf("  hizalanan + referans MAF>0.01: %d SNP\n",sum(ok)))
-  if(sum(ok)<50){cat("  cok az, atlandi\n");next}
+  cat(sprintf("  aligned, reference MAF>0.01: %d SNP\n",sum(ok)))
+  if(sum(ok)<50){cat("  too few, skipped\n");next}
   LDs<-L$LD[ok,ok,drop=FALSE]; snps<-L$bim$rsid[ok]; pos<-L$bim$pos[ok]; RMAF<-rm0[ok]
   mk<-function(f,t){
     D<-list(beta=f$beta[ok],varbeta=f$varbeta[ok],snp=snps,MAF=RMAF,
@@ -159,20 +157,20 @@ for(pt in PARTNERS){
     if(cf[[t]]$ty=="quant"){D$type<-"quant"} else {D$type<-"cc"; D$s<-cf[[t]]$s}
     D }
   FA<-tryCatch(runsusie(mk(fa,"rls_akcimen"),n=NTOT[["rls_akcimen"]],repeat_until_convergence=FALSE,max_iter=300),
-               error=function(e){cat("  SuSiE HATA (RLS):",conditionMessage(e),"\n");NULL})
+               error=function(e){cat("  SuSiE ERROR (RLS):",conditionMessage(e),"\n");NULL})
   FB<-tryCatch(runsusie(mk(fb,pt),n=NTOT[[pt]],repeat_until_convergence=FALSE,max_iter=300),
-               error=function(e){cat("  SuSiE HATA (",pt,"):",conditionMessage(e),"\n");NULL})
+               error=function(e){cat("  SuSiE ERROR (",pt,"):",conditionMessage(e),"\n");NULL})
   showcs<-function(f,lab){
-    if(is.null(f)){cat(sprintf("  %-12s SuSiE basarisiz\n",lab));return(0)}
+    if(is.null(f)){cat(sprintf("  %-12s SuSiE failed\n",lab));return(0)}
     n<-if(is.null(f$sets$cs)) 0 else length(f$sets$cs)
     cat(sprintf("  %-12s %d credible set",lab,n))
     if(n>0) cat(sprintf(" -> %s",paste(sapply(f$sets$cs,function(s)
       sprintf("%s (%d SNP)",names(f$pip)[s][which.max(f$pip[s])],length(s))),collapse="; ")))
     cat("\n"); n }
   na<-showcs(FA,"RLS"); nb<-showcs(FB,LABEL[[pt]])
-  if(is.null(FA)||is.null(FB)||na==0||nb==0){cat("  set-set kolokalizasyon yapilamadi\n");next}
-  r<-tryCatch(coloc.susie(FA,FB),error=function(e){cat("  coloc.susie HATA:",conditionMessage(e),"\n");NULL})
-  if(is.null(r)||is.null(r$summary)||nrow(r$summary)==0){cat("  paylasilan sinyal bulunamadi\n");next}
+  if(is.null(FA)||is.null(FB)||na==0||nb==0){cat("  no set-level colocalization possible\n");next}
+  r<-tryCatch(coloc.susie(FA,FB),error=function(e){cat("  coloc.susie ERROR:",conditionMessage(e),"\n");NULL})
+  if(is.null(r)||is.null(r$summary)||nrow(r$summary)==0){cat("  no shared signal found\n");next}
   print(r$summary[,c("idx1","idx2","PP.H3.abf","PP.H4.abf","hit1","hit2")],row.names=FALSE)
   write.csv(r$summary,sprintf(file.path(ROOT,"results/susie_meis1_rls_%s.csv"),pt),row.names=FALSE)
 }

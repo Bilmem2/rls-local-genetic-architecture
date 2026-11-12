@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# pd_02 — Munge PD GWAS for RLS×PD (Nalls discovery + FinnGen replication). Short; AI runs.
+# pd_02 — Munge PD GWAS for RLS×PD (Nalls discovery + FinnGen replication).
 #   Nalls harmonised: rsid, beta = real log-OR (+SE), per-SNP N_cases/N_controls -> --N-cas-col/--N-con-col.
 #   FinnGen R11: rsids (may be multi -> first), alt=effect, ref=other, beta(+sebeta), pval; fixed N.
 # =============================================================================

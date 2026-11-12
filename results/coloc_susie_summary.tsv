@@ -1,0 +1,10 @@
+locus	trait_pair	rls_credible_sets	trait_credible_sets	rls_lead	trait_lead	PP.H4_coloc_susie	PP.H4_coloc_abf_same_snps	note
+MEIS1	RLS x insomnia	9	1	rs113851554	rs11693221	0.98	NA	
+MEIS1	RLS x chronotype	10	1	rs113851554	rs113851554	1.00	NA	
+MEIS1	RLS x short sleep	8	2	rs11693221	rs11693221	1.00	NA	
+MEIS1	RLS x short sleep (2nd trait set)	8	2	NA	rs2284706	<0.05	NA	
+TOX3	RLS x PD	2	1	rs3104769	rs12929797	0.87	0.93	suggestive (0.80-0.90)
+TOX3	RLS x PD (2nd RLS set)	2	1	rs45620232	rs12929797	<0.01	NA	assigned to a distinct variant (PP.H3 0.98)
+SEMA6D	RLS x MDD	1	1	rs586226	rs7166621	0.86	0.98	suggestive (0.80-0.90)
+PTPRD	RLS x short sleep	3	0	NA	NA	NA	0.91	no credible set for short sleep; coloc-SuSiE not applicable
+SKOR2	RLS x daytime sleepiness	1	0	rs9965170	NA	NA	0.98	no credible set for daytime sleepiness; coloc-SuSiE not applicable

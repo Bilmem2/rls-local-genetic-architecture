@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
 # =============================================================================
-# pd_05 — genome-wide LAVA LOCAL genetic correlation, PD × RLS. (novel part)
+# pd_05 — genome-wide LAVA LOCAL genetic correlation, PD × RLS.
 #   For each of ~2,495 LD blocks: gate on BOTH traits having local h2
 #   (univ p < 0.05/2495), then bivariate local rg. Tests whether RLS-PD share
 #   signal at specific loci despite the null GLOBAL rg (as ADHD-RLS did).

@@ -4,8 +4,8 @@
 #
 # Every estimate is read from results/tox3_crossancestry_local_rg.csv (shipped with this
 # repository), so the figure cannot drift away from the reported numbers. Rows carrying a
-# confidence interval are gated LAVA estimates; rows without one are point estimates from the
-# 11-pair triage and are drawn as open diamonds. This script fixes only labels, colours and order.
+# confidence interval are gated LAVA estimates; rows without one are ungated point estimates
+# and are drawn as open diamonds. This script fixes only labels, colours and order.
 import csv, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -45,12 +45,12 @@ ax.axvline(0, color="k", lw=1, ls="--")
 ax.set_yticks(range(len(D))); ax.set_yticklabels([d[0] for d in D], fontsize=9)
 ax.set_xlabel("Local genetic correlation $\\rho$  (RLS × PD at TOX3/CASC16)")
 ax.set_xlim(-1.05, 0.35)
-ax.set_title("TOX3/CASC16 (chr16q12): RLS–PD negative local rg replicates\n"
-             f"across PD GWAS and ancestries (all {len(D)} estimates negative)", fontsize=11)
+ax.set_title("TOX3/CASC16 (chr16q12): the negative RLS–PD local rg is directionally\n"
+             f"consistent across PD GWAS and ancestries (all {len(D)} estimates negative)", fontsize=11)
 leg = [Line2D([0], [0], marker="o", color="w", markerfacecolor="#1f4e79", markersize=8,
-              label="filled = 95% CI (gated LAVA)"),
+              label="filled = gated LAVA estimate, 95% CI"),
        Line2D([0], [0], marker="D", color="w", markerfacecolor="#7aa6c2", markersize=7,
-              label="open ◆ = point est. (triage, underpowered)")]
+              label="open ◆ = ungated point estimate")]
 ax.legend(handles=leg, loc="lower left", fontsize=8, frameon=True)
 ax.grid(axis="x", alpha=0.25)
 

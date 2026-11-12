@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# pd_01 — Download PD GWAS for the RLS×PD analysis (Fulya collaboration).
+# pd_01 — Download PD GWAS for the RLS×PD analysis.
 #   >>> RUN IN YOUR OWN WSL TERMINAL <<<  (~1.1 GB; idempotent + resumable).
 #
 #   Discovery   : Nalls et al. 2019 EUR (GCST009325, +UKB proxy, excl-23andMe), GWAS Catalog
@@ -51,4 +51,4 @@ gzip -t "$PD/nalls2019_PD_eur.h.tsv.gz" 2>/dev/null && echo "  [ok] nalls gz" ||
 gzip -t "$PD/finngen_R11_PD.gz" 2>/dev/null && echo "  [ok] finngen gz" || echo "  !! finngen CORRUPT"
 echo "  nalls header:";   zcat "$PD/nalls2019_PD_eur.h.tsv.gz" | head -1
 echo "  finngen header:"; zcat "$PD/finngen_R11_PD.gz" | head -1
-echo "### pd_01 DONE — next: pd_02 munge (AI runs) ###"
+echo "### pd_01 done; next: pd_02_munge.sh ###"

@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-# FULL systematic coloc screen: coloc.abf on EVERY p<1e-3 LAVA hit across ALL panel pairs.
-# Regenerates sig-hits from all lava_panel*.csv, configs all 14 traits. Output -> results/coloc_screen_full.tsv
+# Sensitivity of coloc.abf PP.H4 to the colocalization prior (p12) and to narrowing the LD block,
+# at the prioritized loci (Supplementary Table S4A). Trait readers are shared with coloc_screen_full.R.
 suppressMessages({ if(!requireNamespace("coloc",quietly=TRUE)){cat("ERROR: coloc missing\n");quit(status=2)}; library(coloc) })
 ROOT<-"/path/to/analysis"; G<-file.path(ROOT,"data/gwas"); LV<-file.path(ROOT,"results/lava")
 PTHR<-as.numeric(Sys.getenv("COLOC_P","0.001")); PAT<-Sys.getenv("COLOC_PAT","lava_panel"); TAG<-Sys.getenv("COLOC_TAG","full")
@@ -75,9 +75,8 @@ mkD<-function(d,tr){ cc<-cf[[tr]]; base<-list(beta=d$b,varbeta=d$vb,snp=d$rsid,M
   if(cc$ty=="quant"){base$type<-"quant";base$N<-cc$N} else {base$type<-"cc";base$s<-cc$s}; base }
 
 
-## ---- prior + GERCEK genomik pencere duyarliligi ----
-## Onceki surumde pencere, satir sirasina gore kirpiliyordu; intersect() sirasi
-## konum sirasi olmadigi icin bu gecersizdi. Simdi blok koordinatlari daraltiliyor.
+## ---- prior and genomic-window sensitivity ----
+## The block is narrowed on genomic coordinates, not on row order.
 TARGET<-data.frame(
   t1=c("rls_akcimen","rls_akcimen","rls_akcimen","rls_akcimen","rls_akcimen","rls_akcimen","rls_akcimen","pd_nalls"),
   t2=c("insomnia","chronotype","sleepdur_eur_short","mdd","pd_nalls","daytime_sleepiness","sleepdur_eur_short","rbd"),
@@ -93,10 +92,10 @@ out<-list()
 for(i in 1:nrow(TARGET)){
   tg<-TARGET[i,]
   hh<-H[H$phen1==tg$t1 & H$phen2==tg$t2 & H$chr==tg$chr & abs(H$start-tg$start)<1000,]
-  if(nrow(hh)==0){ cat("BULUNAMADI:",tg$gene,"\n"); next }
+  if(nrow(hh)==0){ cat("NOT FOUND:",tg$gene,"\n"); next }
   h<-hh[1,]; mid<-(h$start+h$stop)/2; half<-(h$stop-h$start)/2
   for(fr in FRAC){
-    lo<-round(mid-half*fr); hi<-round(mid+half*fr)          # blogu konuma gore daralt
+    lo<-round(mid-half*fr); hi<-round(mid+half*fr)          # narrow the block by position
     a<-getreg(tg$t1,h$chr,lo,hi); b<-getreg(tg$t2,h$chr,lo,hi)
     if(is.null(a)||is.null(b)) next
     cm<-intersect(a$rsid,b$rsid); if(length(cm)<20) next
@@ -114,15 +113,15 @@ for(i in 1:nrow(TARGET)){
         top=r$results$snp[which.max(r$results$SNP.PP.H4)], stringsAsFactors=FALSE)
     }
   }
-  cat("bitti:",tg$gene,tg$t2,"\n")
+  cat("done:",tg$gene,tg$t2,"\n")
 }
 R<-do.call(rbind,out)
 write.table(R,file.path(ROOT,"results/coloc_prior_sensitivity.tsv"),sep="\t",row.names=FALSE,quote=FALSE)
-cat("\n=== PRIOR (tam blok) ===\n")
+cat("\n=== PRIOR (full block) ===\n")
 print(R[R$window=="100%",c("gene","pair","p12","nSNP","PP3","PP4","top")],row.names=FALSE)
-cat("\n=== GENOMIK PENCERE (p12=1e-5) ===\n")
+cat("\n=== GENOMIC WINDOW (p12=1e-5) ===\n")
 print(R[R$p12==1e-5,c("gene","pair","window","span_kb","nSNP","PP3","PP4","top")],row.names=FALSE)
-cat("\n=== HER LOKUSTA PP4 ARALIGI ===\n")
+cat("\n=== PP4 RANGE AT EACH LOCUS ===\n")
 ag<-aggregate(PP4~gene+pair,R,function(x)c(min(x),max(x)))
 print(data.frame(gene=ag$gene,pair=ag$pair,PP4_min=ag$PP4[,1],PP4_max=ag$PP4[,2]),row.names=FALSE)
 cat("\n=== PRIOR_SENS2_DONE ===\n")

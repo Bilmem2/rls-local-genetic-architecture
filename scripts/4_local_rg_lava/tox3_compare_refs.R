@@ -1,5 +1,5 @@
 #!/usr/bin/env Rscript
-# Ayni blok, ayni sumstats, ayni overlap — sadece LD referansi farkli.
+# Same block, same summary statistics, same sample overlap; only the LD reference differs.
 suppressMessages(library(LAVA))
 L    <- "/path/to/analysis/results/lava"
 INFO <- file.path(L, "info.nalls_akcimen.txt")
@@ -18,9 +18,9 @@ for (nm in c("1000G EUR", "UK Biobank")) {
                   error = function(e) { cat("input err:", conditionMessage(e), "\n"); NULL })
   if (is.null(inp)) next
   loc <- tryCatch(process.locus(loci[1, ], inp), error = function(e) NULL)
-  if (is.null(loc)) { cat("blok islenemedi\n"); next }
+  if (is.null(loc)) { cat("block could not be processed\n"); next }
   u <- run.univ(loc); b <- run.bivar(loc)
-  cat("SNP:", loc$n.snps, " | bilesen (K):", loc$K, "\n")
+  cat("SNP:", loc$n.snps, " | components (K):", loc$K, "\n")
   print(u)
   cat("\n")
   print(b)
@@ -35,17 +35,17 @@ for (nm in c("1000G EUR", "UK Biobank")) {
     rho = round(b$rho[1], 4), lo = round(b$rho.lower[1], 4),
     hi = round(b$rho.upper[1], 4), p_bivar = signif(b$p[1], 3))
 }
-cat("\n\n======== YAN YANA ========\n")
+cat("\n\n======== SIDE BY SIDE ========\n")
 out <- do.call(rbind, res)
 print(out, row.names = FALSE)
-cat("\nunivariate kapi: p <", signif(GATE, 3), "(her iki traitte de gecmeli)\n")
+cat("\nunivariate gate: p <", signif(GATE, 3), "(must pass in both traits)\n")
 
-# UKB referansinin bu bolgedeki SNP kapsami
+# SNP coverage of the UKB reference in this region
 info <- try(read.table("/path/to/ukb_ld/lava-ukb-v1.1_chr16.info", header = TRUE,
                        nrows = 5), silent = TRUE)
 if (!inherits(info, "try-error")) {
-  cat("\n.info kolonlari:", paste(names(info), collapse = ", "), "\n")
+  cat("\n.info columns:", paste(names(info), collapse = ", "), "\n")
 }
 write.csv(out, "/path/to/analysis/results/lava/tox3_ld_reference_comparison.csv",
           row.names = FALSE)
-cat("\nyazildi: results/lava/tox3_ld_reference_comparison.csv\n")
+cat("\nwrote: results/lava/tox3_ld_reference_comparison.csv\n")

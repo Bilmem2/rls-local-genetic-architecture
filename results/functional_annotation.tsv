@@ -1,0 +1,7 @@
+locus	lead_snp	trait_pair	regulatory_qtl_evidence	l2g
+TOX3	rs3104769	RLS x PD	eQTL in cervical spinal cord and hippocampus; in PD GWAS credible set	TOX3 (0.80)
+SEMA6D	rs586226	RLS x MDD	in RLS + neuroticism credible sets; eQTL/sQTL in DLPFC, neocortex, sensory neuron	SEMA6D (0.89)
+MEIS1	rs11693221	RLS x short sleep	in RLS credible set (PIP 1.0); DLPFC eQTL	MEIS1 (0.80)
+MEIS1	rs113851554	RLS x insomnia / chronotype	lead of 54 fine-mapped credible sets, all assigned to MEIS1 (incl. RLS, insomnia, chronotype); not an MEIS1 eQTL lead	MEIS1 (0.79-0.86)
+PTPRD	rs12685098	RLS x short sleep	in RLS + insomnia credible sets; DLPFC/neocortex eQTL and sQTL	PTPRD (~0.6)
+SKOR2	rs9965170	RLS x daytime sleepiness	enhancer -> SKOR2; nearest cis-eQTL is KATNAL2 (skeletal muscle)	SKOR2 (0.78)

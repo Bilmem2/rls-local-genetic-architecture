@@ -10,7 +10,7 @@ four layers:
 1. **Global** genetic correlation (LDSC)
 2. **Local** genetic correlation (LAVA, per ~2,495 LD blocks)
 3. **Colocalization** (`coloc.abf` at every block passing the local screen, plus prior/window
-   sensitivity and `coloc.susie` at *MEIS1*)
+   sensitivity and `coloc.susie` at the five colocalizing loci)
 4. **Cross-ancestry** comparison of the TOX3 RLS-PD signal (EUR / AFR / AMR)
 
 Summary-statistic files and LD reference panels are **not** redistributed here (they are public or
@@ -63,11 +63,11 @@ Scripts are grouped by pipeline stage; run the stages in order (or use `run_all.
 - `panel_lava.R` (genome-wide bivariate local rg; `panel_lava2.R` is the parallelizable variant), `panel_lava_run.sh` / `panel_lava2_run.sh` (runners)
 - `pd_05_lava.R` (the genome-wide LAVA engine driven by `LAVA_PAIRS`), `pd_xanc_run_lava.sh` (cross-ancestry and GP2 scans, incl. TOX3; calls `pd_05_lava.R`)
 - `run_narco_lava.R` (narcolepsy against RLS and PD, after the switch to Ollila 2023)
-- `known_vs_novel_blocks.R` (for each of the 74 screened blocks, whether either trait's GWAS carries a genome-wide-significant variant in the block; reuses the readers of `coloc_screen_full.R`, so it runs after the coloc screen)
+- `known_vs_novel_blocks.R` (for each of the 74 screened local correlations, whether either trait's GWAS carries a genome-wide-significant variant in the block; reuses the readers of `coloc_screen_full.R`, so it runs after the coloc screen)
 
 ### `scripts/5_coloc/` - colocalization (coloc.abf)
 - `coloc_screen.R` (screen over a subset of trait pairs) and `coloc_screen_full.R` (the full-panel screen behind `results/coloc_screen_full_supplementary.csv`), plus targeted runs `coloc_rlspd.R` (RLS x PD incl. TOX3), `coloc_meis1.R`, `coloc_chr1.R` (each with a `.sh` runner that extracts the region and calls the R script), and `run_narco_coloc.R` (narcolepsy hits)
-- robustness: `coloc_prior_sens.R` (PP.H4 across colocalization priors), `coloc_window_sens.R` (PP.H4 across window widths around each lead variant), `coloc_susie_meis1.R` (coloc-SuSiE at *MEIS1*, allowing multiple causal variants per trait) - together **Supplementary Table S4**
+- robustness: `coloc_prior_sens.R` (PP.H4 across colocalization priors), `coloc_window_sens.R` (PP.H4 across window widths around each lead variant), `coloc_susie_meis1.R`, `coloc_susie_tox3_sema6d.R` and `coloc_susie_ptprd_skor2.R` (coloc-SuSiE at the five colocalizing loci, allowing multiple causal variants per trait; at *PTPRD* and *SKOR2* SuSiE finds no credible set for the sleep trait, so no set-level comparison is possible) - together **Supplementary Table S4**
 
 ### `scripts/6_cross_ancestry_tox3/` - TOX3/CASC16 cross-ancestry
 - `run_xanc_coloc_afr.R` (African-ancestry local rg at every colocalizing locus; the TOX3 row reproduces the primary estimate and acts as a positive control)
@@ -76,8 +76,13 @@ Scripts are grouped by pipeline stage; run the stages in order (or use `run_all.
 ### `scripts/7_figures/`
 - `forest_rg.R` (global-rg forest, Figure 2), `coloc_selectivity.py` (local rg against colocalization posterior, Figure 3)
 
-Both read their numbers from the tables in `results/`, so a figure cannot drift away from the
-reported values.
+Both read their numbers from the tables in `results/`, so a figure cannot drift away from the reported values.
+
+### Functional annotation (no script)
+The colocalizing lead variants were annotated by hand in the Open Targets Platform (release 26.06, web
+interface, July 2026): GWAS and molecular-QTL credible sets, locus-to-gene (L2G) scores and
+enhancer-to-gene predictions, with baseline expression from GTEx. The extracted values are in
+`results/functional_annotation.tsv` (manuscript Table 2).
 
 ## Results
 
@@ -86,10 +91,13 @@ each file. In brief: `global_genetic_correlation_ldsc.csv` (LDSC, **Supplementar
 `colocalization_hits.csv` (**Table 1**), `coloc_screen_full_supplementary.csv` (all 74 local
 correlations carried to colocalization, with Bonferroni and Benjamini-Hochberg columns over the
 2,821 bivariate tests, **Supplementary Table S3**), `coloc_prior_sensitivity.tsv` and
-`coloc_window_sensitivity.tsv` plus `susie_meis1_rls_*.csv` (**Supplementary Table S4**),
+`coloc_window_sensitivity.tsv` plus the coloc-SuSiE outputs `susie_*_rls_*.csv`, summarised in
+`coloc_susie_summary.tsv` (**Supplementary Table S4**),
 `tox3_crossancestry_local_rg.csv` (Figure 5), `xanc_coloc_afr.csv` (African-ancestry check at
-the colocalizing loci), and `known_vs_novel_blocks.csv` (genome-wide-significance status of every
-screened block, the GWS column of Supplementary Table S3).
+the colocalizing loci), `lava_pd_rls_afr.csv` and `lava_pd_rls_amr.csv` (the African- and
+Admixed-American-ancestry RLS x PD scans), `known_vs_novel_blocks.csv` (genome-wide-significance status of every
+screened block, the GWS column of Supplementary Table S3), and
+`functional_annotation.tsv` (**Table 2**).
 
 ## Software
 
@@ -98,6 +106,7 @@ screened block, the GWS column of Supplementary Table S3).
 - **coloc** v5.2.3 (`coloc.abf` and `coloc.susie`) - R 4.3.3
 - **susieR** v0.14.2 - R 4.3.3 (multi-signal fine-mapping behind coloc-SuSiE)
 - **PLINK** v1.9 / v2.0
+- **Open Targets Platform** release 26.06 (web interface, accessed July 2026) - functional annotation (Table 2)
 - LD reference: 1000 Genomes Phase 3 (EUR / AFR / AMR); HapMap3 SNP list for munging
 
 Exact package pins and the LDSC Python-3 patches are recorded in `scripts/1_setup/00_setup_environment.sh`.

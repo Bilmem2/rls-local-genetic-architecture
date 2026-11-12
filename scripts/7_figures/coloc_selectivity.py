@@ -11,7 +11,6 @@ import csv, matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
-from adjustText import adjust_text
 
 ROOT = "/path/to/analysis"
 CSV  = ROOT + "/results/coloc_screen_full_supplementary.csv"
@@ -27,7 +26,7 @@ LABELS = [("2:65938003",  "insomnia",    "$MEIS1$ $\\times$ insomnia"),
           ("15:47693317", "MDD",         "$SEMA6D$ $\\times$ MDD"),
           ("16:52041337", "PD",          "$TOX3$ $\\times$ PD"),
           ("18:44300146", "daytime",     "$SKOR2$ $\\times$ daytime"),
-          ("1:154685546", "RBD",         "$GBA$ reg. $\\times$ RBD")]
+          ("1:154685546", "RBD",         "$GBA1$ $\\times$ RBD")]
 
 def labfor(r):
     reg = r["Region_hg19"].replace("chr", "")
@@ -46,7 +45,7 @@ n_coloc = sum(1 for r in rows if r["verdict"] == "COLOC")
 n_genes = len({lab.split("$")[1] for lab in (labfor(r) for r in rows if r["verdict"] == "COLOC") if lab})
 
 fig, ax = plt.subplots(figsize=(9.2, 6.2))
-# diffuse points first (behind), then labelled points on top with a dark edge
+# non-colocalizing points first (behind), then labelled points on top with a dark edge
 for r in sorted(rows, key=lambda r: r["verdict"] != "no"):
     c, s, z = style(r["verdict"])
     lab = labfor(r)
@@ -55,20 +54,30 @@ for r in sorted(rows, key=lambda r: r["verdict"] != "no"):
 ax.axhline(0.9, ls="--", color="#c0392b", lw=1, alpha=0.75)
 ax.text(-1.05, 0.925, "PP4 = 0.9 (coloc threshold)", color="#c0392b", fontsize=8)
 
-texts = [ax.text(float(r["LAVA_rho"]), float(r["PP.H4"]), labfor(r), fontsize=9, zorder=6)
-         for r in rows if labfor(r)]
-adjust_text(texts, ax=ax,
-            arrowprops=dict(arrowstyle="-", color="0.5", lw=0.7),
-            expand=(1.6, 2.0), force_text=(0.6, 1.0), force_static=(0.3, 0.5),
-            only_move={"text": "xy", "static": "xy"})
+# fixed label offsets (dx, dy in data units, horizontal alignment), so the layout is reproducible
+POS = {"$MEIS1$ $\\times$ chronotype":  (-0.03,  0.035, "left"),
+       "$TOX3$ $\\times$ PD":           ( 0.045, -0.035, "left"),
+       "$MEIS1$ $\\times$ short-sleep": (-0.03,  0.035, "right"),
+       "$MEIS1$ $\\times$ insomnia":    (-0.02,  0.035, "left"),
+       "$SEMA6D$ $\\times$ MDD":        ( 0.04, -0.055, "left"),
+       "$SKOR2$ $\\times$ daytime":     ( 0.09, -0.10,  "left"),
+       "$PTPRD$ $\\times$ short-sleep": (-0.045, 0.015, "right"),
+       "$GBA1$ $\\times$ RBD":          ( 0.05, -0.03,  "left")}
+for r in rows:
+    lab = labfor(r)
+    if not lab:
+        continue
+    x, y = float(r["LAVA_rho"]), float(r["PP.H4"])
+    dx, dy, ha = POS[lab]
+    ax.annotate(lab, xy=(x, y), xytext=(x + dx, y + dy), ha=ha, va="center", fontsize=9, zorder=6,
+                arrowprops=dict(arrowstyle="-", color="0.5", lw=0.7, shrinkA=1, shrinkB=6))
 
 ax.set_xlabel("LAVA local genetic correlation ($\\rho$)", fontsize=11)
 ax.set_ylabel("Colocalization posterior PP4 (shared causal variant)", fontsize=11)
-ax.set_title("Colocalization filters local genetic correlation:\n"
-             f"{n_coloc} of {n_total} panel hits share a causal variant  "
-             "($MEIS1$ shared by 3 sleep traits)", fontsize=11.5)
+ax.set_title(f"Colocalization of the {n_total} screened local genetic correlations:\n"
+             f"{n_coloc} colocalize (PP4 > 0.9), three of them at $MEIS1$", fontsize=11.5)
 leg = [Line2D([0], [0], marker="o", color="w", markerfacecolor="#b3b3b3", markersize=7,
-              label="diffuse (no shared causal variant)"),
+              label="not colocalizing (PP4 < 0.8)"),
        Line2D([0], [0], marker="o", color="w", markerfacecolor="#e08e0b", markersize=8,
               label="suggestive (0.8 < PP4 < 0.9)"),
        Line2D([0], [0], marker="o", color="w", markerfacecolor="#c0392b", markersize=9,

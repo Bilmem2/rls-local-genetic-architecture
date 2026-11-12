@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-# Beta/beta plots at TOX3/CASC16 (Fulya's suggestion): Nalls PD vs each RLS GWAS.
+# Beta/beta plots at TOX3/CASC16: Nalls PD vs each RLS GWAS.
 # rsID-matched, alleles harmonised to PD effect allele (RLS beta flipped if swapped).
-# Plotted on locus-ASSOCIATED SNPs (signal in either trait) like Fulya's figure; all-SNP r also reported.
+# Plotted on locus-associated SNPs (signal in either trait); the all-SNP r is also reported.
 # This is a DESCRIPTIVE visualisation; the rigorous estimate is the LAVA local rho.
 import pandas as pd, numpy as np
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt

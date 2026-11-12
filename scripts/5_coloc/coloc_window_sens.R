@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript
-# FULL systematic coloc screen: coloc.abf on EVERY p<1e-3 LAVA hit across ALL panel pairs.
-# Regenerates sig-hits from all lava_panel*.csv, configs all 14 traits. Output -> results/coloc_screen_full.tsv
+# Window sensitivity: coloc.abf PP.H4 at the prioritized loci over windows of +-100 kb to +-1 Mb
+# centred on each lead variant (Supplementary Table S4B). Trait readers are shared with coloc_screen_full.R.
 suppressMessages({ if(!requireNamespace("coloc",quietly=TRUE)){cat("ERROR: coloc missing\n");quit(status=2)}; library(coloc) })
 ROOT<-"/path/to/analysis"; G<-file.path(ROOT,"data/gwas"); LV<-file.path(ROOT,"results/lava")
 PTHR<-as.numeric(Sys.getenv("COLOC_P","0.001")); PAT<-Sys.getenv("COLOC_PAT","lava_panel"); TAG<-Sys.getenv("COLOC_TAG","full")
@@ -75,9 +75,9 @@ mkD<-function(d,tr){ cc<-cf[[tr]]; base<-list(beta=d$b,varbeta=d$vb,snp=d$rsid,M
   if(cc$ty=="quant"){base$type<-"quant";base$N<-cc$N} else {base$type<-"cc";base$s<-cc$s}; base }
 
 
-## ---- LEAD MERKEZLI pencere duyarliligi (standart yaklasim) ----
-## Blok ortasina gore daraltma, lead varyant merkez disindaysa yaniltici olur
-## (or. SEMA6D lead'i blogun %20.7'sinde). Burada pencere lead'e gore alinir.
+## ---- window sensitivity centred on the lead variant ----
+## Narrowing around the block midpoint misleads when the lead is off-centre (the SEMA6D lead sits at
+## 20.7% of its block), so the windows are centred on the lead variant.
 TG<-data.frame(
   gene =c("MEIS1","MEIS1","MEIS1","SEMA6D","TOX3","SKOR2","PTPRD","GBA"),
   t1   =c("rls_akcimen","rls_akcimen","rls_akcimen","rls_akcimen","rls_akcimen","rls_akcimen","rls_akcimen","pd_nalls"),
@@ -108,13 +108,13 @@ for(i in 1:nrow(TG)){
       top=r$results$snp[which.max(r$results$SNP.PP.H4)],
       lead_kept=g$lead %in% NA, stringsAsFactors=FALSE)
   }
-  cat("bitti:",g$gene,g$t2,"\n")
+  cat("done:",g$gene,g$t2,"\n")
 }
 R<-do.call(rbind,out); R$lead_kept<-NULL
 write.table(R,file.path(ROOT,"results/coloc_window_sensitivity.tsv"),sep="\t",row.names=FALSE,quote=FALSE)
-cat("\n=== LEAD MERKEZLI PENCERE DUYARLILIGI (p12 varsayilan 1e-5) ===\n")
+cat("\n=== LEAD-CENTRED WINDOW SENSITIVITY (default p12 1e-5) ===\n")
 print(R,row.names=FALSE)
-cat("\n=== HER LOKUSTA PP4 ARALIGI ===\n")
+cat("\n=== PP4 RANGE AT EACH LOCUS ===\n")
 ag<-aggregate(PP4~gene+pair,R,function(x)c(min(x),max(x)))
 print(data.frame(gene=ag$gene,pair=ag$pair,PP4_min=ag$PP4[,1],PP4_max=ag$PP4[,2]),row.names=FALSE)
 cat("\n=== WINDOW_SENS_DONE ===\n")

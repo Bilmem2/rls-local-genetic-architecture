@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Download Fulya's cross-ancestry RLS sumstats (AFR, AMR) from Zenodo record 20725243.
+# Download the cross-ancestry RLS summary statistics of Akçimen et al. 2026 (AFR, AMR) from Zenodo record 20725243.
 set -uo pipefail
 RLS=/path/to/analysis/data/gwas/rls
 cd "$RLS"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# pd_03 — Global LDSC genetic correlation: PD × RLS. Short; AI runs.
+# pd_03 — Global LDSC genetic correlation: PD × RLS.
 #   PD: Nalls 2019 (discovery) + FinnGen R11 (replication).
 #   RLS: Akçimen meta (primary), Didriksen, Schormair.
 #   Updates Estiar 2021 (rg=-0.028, null) with the larger RLS meta + PD discovery+replication.
