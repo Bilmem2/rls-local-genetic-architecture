@@ -49,7 +49,7 @@ col.rls <- "#1f6feb"; col.pd <- "#c0873a"
 sig    <- rls.p < 0.05/n_tests
 sig.pd <- pd.p  < 0.05/n_tests   # same threshold: 16 pairs were tested for each disorder
 png(OUT, width=2700, height=2300, res=300, type="cairo")
-par(mar=c(6.4,9.5,3.2,1.5))   # bottom margin: room for the footnote below the axis label
+par(mar=c(4.6,9.5,3.2,1.5))
 plot(NA, xlim=c(-0.42,0.63), ylim=c(0.5,n+0.5), yaxt="n", xlab="Genetic correlation rg (95% CI)", ylab="",
      main="Global genetic correlation (LDSC): RLS and PD across the panel", cex.main=1.02)
 abline(v=0, lty=2, col="gray55")
@@ -62,7 +62,5 @@ segments(pd-1.96*pd.se, y-off, pd+1.96*pd.se, y-off, col=col.pd, lwd=2.2)
 points(pd, y-off, pch=ifelse(sig.pd,19,21), col=col.pd, bg="white", cex=1.05)
 legend("bottomright", legend=c("RLS (Akçimen 2026)","PD (Nalls 2019)"), col=c(col.rls,col.pd),
        pch=c(19,21), lwd=2.2, bty="n", cex=0.92, pt.bg="white")
-mtext(sprintf("Filled points: Bonferroni-significant (P < 0.05/%d).", n_tests),
-      side=1, line=4.5, cex=0.68, col="gray35")
 dev.off()
 cat("wrote", OUT, "\n")
