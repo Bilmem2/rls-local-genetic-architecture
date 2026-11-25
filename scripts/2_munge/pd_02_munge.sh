@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# pd_02 — Munge PD GWAS for RLS×PD (Nalls discovery + FinnGen replication).
+# pd_02 — Munge PD GWAS for RLS×PD (Nalls 2019 and FinnGen R11).
 #   Nalls harmonised: rsid, beta = real log-OR (+SE), per-SNP N_cases/N_controls -> --N-cas-col/--N-con-col.
 #   FinnGen R11: rsids (may be multi -> first), alt=effect, ref=other, beta(+sebeta), pval; fixed N.
 # =============================================================================
@@ -30,7 +30,7 @@ if [ -s "$PD/nalls2019_PD_eur.h.tsv.gz" ]; then
     || { echo "  !! FAIL"; tail -25 "$M/pd_nalls.mungelog"; }
 else echo "  !! missing $PD/nalls2019_PD_eur.h.tsv.gz — run pd_01 first"; fi
 
-echo "=== 2. PD FinnGen R11 (replication) ==="
+echo "=== 2. PD FinnGen R11 ==="
 if [ ! -s "$PD/finngen_R11_PD.gz" ]; then
   echo "  !! missing FinnGen file — run pd_01 first"
 elif [ "$FG_NCAS" -gt 0 ] && [ "$FG_NCON" -gt 0 ]; then

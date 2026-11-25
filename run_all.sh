@@ -38,6 +38,7 @@ step bash    scripts/2_munge/munge_sleep2.sh              # OSA + sleep duration
 step bash    scripts/2_munge/munge_sleep3.sh              # sleep-duration rsID fix
 step bash    scripts/2_munge/munge_rg_daytime.sh          # daytime sleepiness
 step bash    scripts/2_munge/munge_narcolepsy_ollila.sh   # narcolepsy (Ollila 2023 EUR)
+step bash    scripts/2_munge/dl_finngen_osa.sh            # FinnGen R12 obstructive sleep apnea (download)
 
 # ---- Stage 3: global genetic correlation (LDSC) ----
 step bash    scripts/3_global_rg/panel_rg.sh
@@ -47,23 +48,22 @@ step bash    scripts/3_global_rg/pd_03_rg.sh
 
 # ---- Stage 4: local genetic correlation (LAVA) ----
 step bash    scripts/4_local_rg_lava/panel_lava_run.sh    # genome-wide (panel_lava2_run.sh = parallel alternative)
-step bash    scripts/4_local_rg_lava/pd_xanc_run_lava.sh  # cross-ancestry at TOX3
+step Rscript scripts/4_local_rg_lava/run_narco_lava.R     # narcolepsy (Ollila 2023) against RLS and PD
+step Rscript scripts/4_local_rg_lava/lava_test_family.R   # unique test family, Bonferroni + BH -> results/lava_test_family.tsv
+step bash    scripts/4_local_rg_lava/pd_xanc_run_lava.sh  # Admixed-American RLS x PD scan
+step bash    scripts/4_local_rg_lava/neff_from_se.sh      # effective N of the GP2 meta-analysis from its standard errors
+step bash    scripts/4_local_rg_lava/xanc_lava_tox3.sh    # African-ancestry RLS x PD scan + GP2 at TOX3
 
-# ---- Stage 5: colocalization (coloc.abf) ----
-step Rscript scripts/5_coloc/coloc_screen.R               # systematic screen (subset of trait pairs)
-step Rscript scripts/5_coloc/coloc_screen_full.R          # full panel screen -> Supplementary Table S3
-step bash    scripts/5_coloc/coloc_rlspd.sh               # RLS x PD (incl. TOX3)
-step bash    scripts/5_coloc/coloc_meis1.sh
-step bash    scripts/5_coloc/coloc_chr1.sh
-step Rscript scripts/5_coloc/coloc_prior_sens.R           # prior sensitivity   -> Supp. Table S4A
-step Rscript scripts/5_coloc/coloc_window_sens.R          # window sensitivity  -> Supp. Table S4B
-step Rscript scripts/5_coloc/coloc_susie_meis1.R          # coloc-SuSiE @ MEIS1 -> Supp. Table S4C
-step Rscript scripts/5_coloc/coloc_susie_tox3_sema6d.R    # coloc-SuSiE @ TOX3, SEMA6D -> Supp. Table S4C
-step Rscript scripts/5_coloc/coloc_susie_ptprd_skor2.R    # coloc-SuSiE @ PTPRD, SKOR2 -> Supp. Table S4C
-step Rscript scripts/4_local_rg_lava/known_vs_novel_blocks.R  # GWS status of each screened block -> Supp. Table S3 (GWS)
+# ---- Stage 5: colocalization ----
+step Rscript scripts/5_coloc/coloc_screen_full.R               # coloc.abf over every block with LAVA P < 1e-3
+step Rscript scripts/4_local_rg_lava/known_vs_novel_blocks.R   # GWS status of each screened block
+step Rscript scripts/4_local_rg_lava/gws_full_files.R          # same, short/long sleep and OSA from the full files
+step python  scripts/5_coloc/build_table_s3.py                 # Supplementary Table S3
+step Rscript scripts/5_coloc/coloc_sensitivity.R               # window x prior + coloc-SuSiE -> Supp. Table S4, panels A-C
+step Rscript scripts/5_coloc/finngen_osa_coloc.R               # RLS x FinnGen OSA -> Supp. Table S4, panel E
 
 # ---- Stage 6: TOX3/CASC16 cross-ancestry ----
-step Rscript scripts/6_cross_ancestry_tox3/run_xanc_coloc_afr.R  # AFR local rg at every coloc locus
+step Rscript scripts/6_cross_ancestry_tox3/run_xanc_coloc_afr.R  # AFR local rg at the colocalizing loci
 step bash    scripts/6_cross_ancestry_tox3/betabeta_extract.sh   # also renders betabeta_plot.py
 step python  scripts/6_cross_ancestry_tox3/forest_tox3.py       # Figure 5
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # =============================================================================
 # pd_03 — Global LDSC genetic correlation: PD × RLS.
-#   PD: Nalls 2019 (discovery) + FinnGen R11 (replication).
+#   PD: Nalls 2019 (primary) and FinnGen R11.
 #   RLS: Akçimen meta (primary), Didriksen, Schormair.
-#   Updates Estiar 2021 (rg=-0.028, null) with the larger RLS meta + PD discovery+replication.
+#   Updates Estiar 2021 (rg=-0.028, null) with the larger RLS meta-analysis and two PD GWAS.
 #   Also prints the h2 intercepts + gencov intercept needed for the LAVA overlap matrix (pd_05).
 # =============================================================================
 set -uo pipefail

@@ -1,10 +1,9 @@
-locus	trait_pair	rls_credible_sets	trait_credible_sets	rls_lead	trait_lead	PP.H4_coloc_susie	PP.H4_coloc_abf_same_snps	note
-MEIS1	RLS x insomnia	9	1	rs113851554	rs11693221	0.98	NA	
-MEIS1	RLS x chronotype	10	1	rs113851554	rs113851554	1.00	NA	
-MEIS1	RLS x short sleep	8	2	rs11693221	rs11693221	1.00	NA	
-MEIS1	RLS x short sleep (2nd trait set)	8	2	NA	rs2284706	<0.05	NA	
-TOX3	RLS x PD	2	1	rs3104769	rs12929797	0.87	0.93	suggestive (0.80-0.90)
-TOX3	RLS x PD (2nd RLS set)	2	1	rs45620232	rs12929797	<0.01	NA	assigned to a distinct variant (PP.H3 0.98)
-SEMA6D	RLS x MDD	1	1	rs586226	rs7166621	0.86	0.98	suggestive (0.80-0.90)
-PTPRD	RLS x short sleep	3	0	NA	NA	NA	0.91	no credible set for short sleep; coloc-SuSiE not applicable
-SKOR2	RLS x daytime sleepiness	1	0	rs9965170	NA	NA	0.98	no credible set for daytime sleepiness; coloc-SuSiE not applicable
+id	nSNP	cs_t1	cs_t2	PP4_max	hit1	hit2	PP3_of_best
+meis1_insomnia	1187	9: rs113851554(1); rs17559707(1); rs13021657(1); rs36077609(1); rs999091(1); rs116777676(5); rs2192956(3); rs2110974(2); rs4480973(4)	1: rs11693221(3)	0.978	rs113851554	rs11693221	0.022
+meis1_chronotype	1173	10: rs113851554(1); rs148225733(1); rs149142647(1); rs13021657(1); rs36077609(1); rs999091(1); rs187012067(1); rs116777676(5); rs2192956(3); rs4480973(3)	1: rs113851554(2)	0.998	rs113851554	rs113851554	0.002
+meis1_short_sleep	757	9: rs113851554(1); rs148225733(1); rs36077609(1); rs149142647(1); rs35705623(1); rs116777676(5); rs2192956(3); rs13021657(2); rs3772026(5)	1: rs113851554(4)	0.998	rs113851554	rs113851554	0.002
+skor2_daytime_sleepiness	1521	1: rs9965170(19)	0	NA	NA	NA	NA
+sema6d_mdd	1083	1: rs586226(16)	1: rs7166621(13)	0.863	rs586226	rs7166621	0.137
+tox3_pd	1329	2: rs3104769(10); rs45620232(8)	1: rs12929797(71)	0.871	rs3104769	rs12929797	0.127
+ccdc148_pkp4_osa	1922	1: rs145563530(25)	1: rs111720918(150)	0.804	rs145563530	rs111720918	0.195
+gba1_rbd	696	2: rs35749011(1); rs12730005(45)	0	NA	NA	NA	NA

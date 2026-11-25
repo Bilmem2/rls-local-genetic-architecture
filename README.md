@@ -10,7 +10,7 @@ four layers:
 1. **Global** genetic correlation (LDSC)
 2. **Local** genetic correlation (LAVA, per ~2,495 LD blocks)
 3. **Colocalization** (`coloc.abf` at every block passing the local screen, plus prior/window
-   sensitivity and `coloc.susie` at the five colocalizing loci)
+   sensitivity and `coloc.susie` at the colocalizing pairs)
 4. **Cross-ancestry** comparison of the TOX3 RLS-PD signal (EUR / AFR / AMR)
 
 Summary-statistic files and LD reference panels are **not** redistributed here (they are public or
@@ -28,8 +28,8 @@ After setting the paths (see **Configuration**), the top-level driver runs every
 2. **Munge** - download and harmonize every GWAS (RLS, PD, panel).
 3. **Global rg** - LDSC: RLS x panel and PD x panel.
 4. **Local rg** - LAVA genome-wide, then cross-ancestry LAVA at TOX3.
-5. **Coloc** - systematic `coloc.abf` screen, targeted loci, then the robustness analyses
-   (prior, window, coloc-SuSiE).
+5. **Coloc** - systematic `coloc.abf` screen, then the robustness analyses (prior, window,
+   coloc-SuSiE, FinnGen obstructive sleep apnea).
 6. **Cross-ancestry** - TOX3 forest + per-SNP (beta-beta) concordance.
 7. **Figures**.
 
@@ -54,20 +54,22 @@ Scripts are grouped by pipeline stage; run the stages in order (or use `run_all.
 ### `scripts/2_munge/` - download and harmonize all GWAS
 - RLS: `16_munge_akcimen.sh` (Akcimen EUR), `dl_rls_xanc.sh` + `munge_rls_xanc.sh` (multi-ancestry AFR/AMR)
 - PD: `pd_01_download.sh` + `pd_02_munge.sh` (Nalls + FinnGen), `munge_pd_rizig.sh` (AFR), `munge_pd_xanc.sh` + `annotate_pd_xanc.py` (GP2 EUR / Loesch AMR), `munge_pd_largepd.sh` (LARGE-PD AMR)
-- Panel: `annotate_sleep.sh` (rsID annotation), `munge_panel.sh` (psychiatric + sleep), `munge_insomnia.sh`, `munge_sleep2.sh` (OSA + sleep duration), `munge_sleep3.sh` (sleep-duration rsID fix), `munge_rg_daytime.sh` (daytime sleepiness), `munge_narcolepsy_ollila.sh` (narcolepsy, Ollila 2023 EUR)
+- Panel: `annotate_sleep.sh` (rsID annotation), `munge_panel.sh` (psychiatric + sleep), `munge_insomnia.sh`, `munge_sleep2.sh` (OSA + sleep duration), `munge_sleep3.sh` (sleep-duration rsID fix), `munge_rg_daytime.sh` (daytime sleepiness), `munge_narcolepsy_ollila.sh` (narcolepsy, Ollila 2023 EUR), `dl_finngen_osa.sh` (FinnGen R12 obstructive sleep apnea)
 
 ### `scripts/3_global_rg/` - LDSC genetic correlation
 - `panel_rg_akcimen.sh` (primary: RLS-Akcimen x panel), `panel_rg.sh` (RLS + PD x panel), `insomnia_rg.sh`, `pd_03_rg.sh` (PD x RLS)
 
 ### `scripts/4_local_rg_lava/` - LAVA local genetic correlation
 - `panel_lava.R` (genome-wide bivariate local rg; `panel_lava2.R` is the parallelizable variant), `panel_lava_run.sh` / `panel_lava2_run.sh` (runners)
-- `pd_05_lava.R` (the genome-wide LAVA engine driven by `LAVA_PAIRS`), `pd_xanc_run_lava.sh` (cross-ancestry and GP2 scans, incl. TOX3; calls `pd_05_lava.R`)
-- `run_narco_lava.R` (narcolepsy against RLS and PD, after the switch to Ollila 2023)
-- `known_vs_novel_blocks.R` (for each of the 74 screened local correlations, whether either trait's GWAS carries a genome-wide-significant variant in the block; reuses the readers of `coloc_screen_full.R`, so it runs after the coloc screen)
+- `pd_05_lava.R` (the genome-wide LAVA engine driven by `LAVA_PAIRS`), `pd_xanc_run_lava.sh` (Admixed-American RLS x PD scan), `xanc_lava_tox3.sh` (African-ancestry RLS x PD scan, and the GP2 European meta-analysis against the three European RLS GWAS at TOX3 with the LDSC-based sample-overlap term), `neff_from_se.sh` (effective sample size of the GP2 meta-analysis from its standard errors)
+- `run_narco_lava.R` (narcolepsy against RLS and PD, Ollila 2023)
+- `lava_test_family.R` (the unique family of 2,739 bivariate tests, with Bonferroni and Benjamini-Hochberg adjustment)
+- `known_vs_novel_blocks.R` and `gws_full_files.R` (for each of the 74 screened local correlations, whether either trait's GWAS carries a genome-wide-significant variant in the block; the second script re-reads short sleep, long sleep and obstructive sleep apnea from the full summary statistics)
+- `tox3_ukb_ld.sh`, `tox3_compare_refs.R` and `lava_stochasticity.R` (TOX3 RLS x PD local correlation with a UK Biobank LD reference instead of 1000 Genomes, and the seed-to-seed variation of LAVA's P and CI; Supplementary Table S4, panel D)
 
 ### `scripts/5_coloc/` - colocalization (coloc.abf)
-- `coloc_screen.R` (screen over a subset of trait pairs) and `coloc_screen_full.R` (the full-panel screen behind `results/coloc_screen_full_supplementary.csv`), plus targeted runs `coloc_rlspd.R` (RLS x PD incl. TOX3), `coloc_meis1.R`, `coloc_chr1.R` (each with a `.sh` runner that extracts the region and calls the R script), and `run_narco_coloc.R` (narcolepsy hits)
-- robustness: `coloc_prior_sens.R` (PP.H4 across colocalization priors), `coloc_window_sens.R` (PP.H4 across window widths around each lead variant), `coloc_susie_meis1.R`, `coloc_susie_tox3_sema6d.R` and `coloc_susie_ptprd_skor2.R` (coloc-SuSiE at the five colocalizing loci, allowing multiple causal variants per trait; at *PTPRD* and *SKOR2* SuSiE finds no credible set for the sleep trait, so no set-level comparison is possible) - together **Supplementary Table S4**
+- `coloc_screen_full.R` (`coloc.abf` over the LAVA block of each of the 74 local correlations with P < 1e-3, every GWAS read in its own genome build from the full summary statistics, under three priors) and `build_table_s3.py` (assembles `results/coloc_screen_full_supplementary.csv`, **Supplementary Table S3**)
+- robustness: `coloc_sensitivity.R` (PP.H4 over four windows around each lead variant under three priors, and coloc-SuSiE allowing several causal variants per trait; at *SKOR2* and *GBA1* SuSiE finds no credible set for the second trait, so no set-level comparison is possible) and `finngen_osa_coloc.R` (the *CCDC148/PKP4* RLS x obstructive sleep apnea signal tested in FinnGen R12, which shares no participants with the RLS data but is one of the cohorts of the discovery obstructive sleep apnea meta-analysis) - together **Supplementary Table S4**
 
 ### `scripts/6_cross_ancestry_tox3/` - TOX3/CASC16 cross-ancestry
 - `run_xanc_coloc_afr.R` (African-ancestry local rg at every colocalizing locus; the TOX3 row reproduces the primary estimate and acts as a positive control)
@@ -79,25 +81,25 @@ Scripts are grouped by pipeline stage; run the stages in order (or use `run_all.
 Both read their numbers from the tables in `results/`, so a figure cannot drift away from the reported values.
 
 ### Functional annotation (no script)
-The colocalizing lead variants were annotated by hand in the Open Targets Platform (release 26.06, web
-interface, July 2026): GWAS and molecular-QTL credible sets, locus-to-gene (L2G) scores and
-enhancer-to-gene predictions, with baseline expression from GTEx. The extracted values are in
-`results/functional_annotation.tsv` (manuscript Table 2).
+The lead variants of the colocalizing pairs were annotated in the Open Targets Platform (release 26.09,
+accessed November 2026): GWAS and molecular-QTL credible sets, locus-to-gene (L2G) scores and
+enhancer-to-gene predictions. The extracted values are in `results/functional_annotation.tsv`
+(manuscript Table 2).
 
 ## Results
 
 `results/` holds the machine-readable numbers behind the manuscript; `results/README.md` describes
 each file. In brief: `global_genetic_correlation_ldsc.csv` (LDSC, **Supplementary Table S2**),
-`colocalization_hits.csv` (**Table 1**), `coloc_screen_full_supplementary.csv` (all 74 local
-correlations carried to colocalization, with Bonferroni and Benjamini-Hochberg columns over the
-2,821 bivariate tests, **Supplementary Table S3**), `coloc_prior_sensitivity.tsv` and
-`coloc_window_sensitivity.tsv` plus the coloc-SuSiE outputs `susie_*_rls_*.csv`, summarised in
-`coloc_susie_summary.tsv` (**Supplementary Table S4**),
-`tox3_crossancestry_local_rg.csv` (Figure 5), `xanc_coloc_afr.csv` (African-ancestry check at
-the colocalizing loci), `lava_pd_rls_afr.csv` and `lava_pd_rls_amr.csv` (the African- and
-Admixed-American-ancestry RLS x PD scans), `known_vs_novel_blocks.csv` (genome-wide-significance status of every
-screened block, the GWS column of Supplementary Table S3), and
-`functional_annotation.tsv` (**Table 2**).
+`lava_test_family.tsv` (the 2,739 bivariate LAVA tests with Bonferroni and Benjamini-Hochberg
+adjustment), `colocalization_hits.csv` (**Table 1**), `coloc_screen_full_supplementary.csv` (all 74
+local correlations carried to colocalization, **Supplementary Table S3**),
+`coloc_window_prior_sensitivity.tsv`, the coloc-SuSiE outputs `susie_*.csv` summarised in
+`coloc_susie_summary.tsv`, `tox3_ld_reference_comparison.csv` and `finngen_osa_coloc.tsv`
+(**Supplementary Table S4**), `tox3_crossancestry_local_rg.csv` (Figure 5), `xanc_coloc_afr.csv`
+(African-ancestry check at the colocalizing loci), `lava_pd_rls_afr.csv` and `lava_pd_rls_amr.csv`
+(the African- and Admixed-American-ancestry RLS x PD scans), `known_vs_novel_blocks.csv`
+(genome-wide-significance status of every screened block, the GWS column of Supplementary Table S3),
+and `functional_annotation.tsv` (**Table 2**).
 
 ## Software
 
@@ -106,7 +108,7 @@ screened block, the GWS column of Supplementary Table S3), and
 - **coloc** v5.2.3 (`coloc.abf` and `coloc.susie`) - R 4.3.3
 - **susieR** v0.14.2 - R 4.3.3 (multi-signal fine-mapping behind coloc-SuSiE)
 - **PLINK** v1.9 / v2.0
-- **Open Targets Platform** release 26.06 (web interface, accessed July 2026) - functional annotation (Table 2)
+- **Open Targets Platform** release 26.09 (accessed November 2026) - functional annotation (Table 2)
 - LD reference: 1000 Genomes Phase 3 (EUR / AFR / AMR); HapMap3 SNP list for munging
 
 Exact package pins and the LDSC Python-3 patches are recorded in `scripts/1_setup/00_setup_environment.sh`.

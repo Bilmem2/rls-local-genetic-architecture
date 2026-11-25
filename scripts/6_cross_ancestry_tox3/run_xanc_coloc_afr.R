@@ -3,12 +3,13 @@
 #
 # Trait specification mirrors the main panel analysis (scripts/4_local_rg_lava/panel_lava.R):
 # the case-control disorders (RLS, PD) carry case/control counts, every other trait is continuous
-# (NA NA). The AFR phen1 counts are the same ones used by the primary cross-ancestry
-# scan (scripts/4_local_rg_lava/pd_xanc_run_lava.sh): rls_afr 2,176/153,313 and pd_rizig_afr 1,488/196,430.
+# (NA NA). The AFR counts are those of the primary cross-ancestry scan
+# (scripts/4_local_rg_lava/xanc_lava_tox3.sh): rls_afr 2,176/153,313 and pd_rizig_afr 1,200/2,445
+# (Rizig et al. 2023, release without 23andMe; munged copy with N = 3,645).
 #
 # The TOX3 job is a positive control: with this specification it must reproduce the
-# primary cross-ancestry estimate (rho = -0.734, CI -1.000 to -0.419) reported in the
-# manuscript and Figure 5. Reference panel (g1000_afr), locus definitions (standard LAVA
+# primary cross-ancestry estimate (rho = -0.700) reported in the manuscript and Figure 5;
+# LAVA's bivariate P and CI are simulation-based and vary slightly between runs. Reference panel (g1000_afr), locus definitions (standard LAVA
 # blocks) and the identity sample-overlap assumption are identical to that scan.
 #
 # The African-ancestry RLS arm is small (2,176 cases), so the sleep and MDD jobs are a
@@ -22,14 +23,14 @@ Ldir <- file.path(ROOT,"results/lava"); OUT <- file.path(Ldir,"xanc_coloc_afr.cs
 loci <- read.loci(LOCF)
 
 # the two case-control disorders get case/control counts; every other trait -> continuous (NA NA)
-cc <- list(rls_afr=c(2176,153313), pd_rizig_afr=c(1488,196430))
-info_row <- function(ph){ f <- file.path(M, paste0(ph, ".sumstats.gz"))
+cc <- list(rls_afr=c(2176,153313), pd_rizig_afr=c(1200,2445))
+fn <- c(pd_rizig_afr="pd_rizig_afr_n3645")   # munged file name where it differs from the phenotype name
+info_row <- function(ph){ f <- file.path(M, paste0(if (ph %in% names(fn)) fn[[ph]] else ph, ".sumstats.gz"))
   if (!is.null(cc[[ph]])) sprintf("%s %d %d %s", ph, cc[[ph]][1], cc[[ph]][2], f)
   else sprintf("%s NA NA %s", ph, f) }
 
 JOBS <- list(
  list(name="RLS x short-sleep @ MEIS1", a="rls_afr", t="sleepdur_afr_short", loc=272,  eur="+0.43"),
- list(name="RLS x short-sleep @ PTPRD", a="rls_afr", t="sleepdur_afr_short", loc=1381, eur="+0.51"),
  list(name="RLS x MDD @ SEMA6D",        a="rls_afr", t="mdd_afr",            loc=2055, eur="+0.76"),
  list(name="RLS x PD @ TOX3",           a="rls_afr", t="pd_rizig_afr",       loc=2134, eur="-0.53"))
 res <- list()
@@ -57,5 +58,5 @@ for (J in JOBS) {
 }
 if (length(res)) { R <- do.call(rbind, res); write.table(R, OUT, sep="\t", row.names=FALSE, quote=FALSE)
   cat("\n=== SUMMARY (AFR cross-ancestry at the coloc loci) ===\n"); print(R, row.names=FALSE)
-  cat("\nPOSITIVE CONTROL: TOX3 must reproduce rho = -0.734 [-1.000, -0.419] (primary scan).\n") }
+  cat("\nPOSITIVE CONTROL: TOX3 must reproduce rho = -0.700 (primary scan).\n") }
 cat("\n=== XANC_COLOC_AFR_DONE ===\n")

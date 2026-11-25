@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # =============================================================================
 # pd_01 — Download PD GWAS for the RLS×PD analysis.
-#   >>> RUN IN YOUR OWN WSL TERMINAL <<<  (~1.1 GB; idempotent + resumable).
+#   Download size ~1.1 GB; idempotent and resumable.
 #
 #   Discovery   : Nalls et al. 2019 EUR (GCST009325, +UKB proxy, excl-23andMe), GWAS Catalog
 #                 harmonised file (has rsID; beta=real log-OR + SE; per-SNP N_cases/N_controls).
-#   Replication : FinnGen R11 G6_PARKINSON (independent EUR/Finnish; NOT in IPDGC/Nalls).
-#   Mirrors the RLS 3-GWAS design: discovery + independent replication for any local (LAVA) hit.
+#   Comparison  : FinnGen R11 G6_PARKINSON (EUR/Finnish; not part of IPDGC/Nalls).
+#   A second PD resource for comparing local (LAVA) estimates, as with the three RLS GWAS.
 # =============================================================================
 set -uo pipefail
 ROOT=/path/to/analysis
@@ -30,7 +30,7 @@ echo "=== Discovery: Nalls 2019 EUR (GCST009325 harmonised) ==="
 dl "https://ftp.ebi.ac.uk/pub/databases/gwas/summary_statistics/GCST009001-GCST010000/GCST009325/harmonised/GCST009325.h.tsv.gz" \
    "$PD/nalls2019_PD_eur.h.tsv.gz" 0
 
-echo "=== Replication: FinnGen R11 PD (G6_PARKINSON) ==="
+echo "=== FinnGen R11 PD (G6_PARKINSON) ==="
 dl "https://storage.googleapis.com/finngen-public-data-r11/summary_stats/finngen_R11_G6_PARKINSON.gz" \
    "$PD/finngen_R11_PD.gz" 812752514
 
